@@ -137,7 +137,8 @@ export class NoteController extends BaseController implements INoteController {
                 return;
             }
 
-            const noteId = req.params.id;
+            const rawNoteId = req.params.id;
+            const noteId = Array.isArray(rawNoteId) ? rawNoteId[0] : rawNoteId;
             if (!noteId) {
                 next(new AppError('Note ID is required', 400));
                 return;
@@ -166,7 +167,8 @@ export class NoteController extends BaseController implements INoteController {
                 return;
             }
 
-            const noteId = req.params.id;
+            const rawNoteId = req.params.id;
+            const noteId = Array.isArray(rawNoteId) ? rawNoteId[0] : rawNoteId;
             if (!noteId) {
                 next(new AppError('Note ID is required', 400));
                 return;
@@ -193,7 +195,8 @@ export class NoteController extends BaseController implements INoteController {
                 return;
             }
 
-            const noteId = req.params.id;
+            const rawNoteId = req.params.id;
+            const noteId = Array.isArray(rawNoteId) ? rawNoteId[0] : rawNoteId;
             if (!noteId) {
                 next(new AppError('Note ID is required', 400));
                 return;
