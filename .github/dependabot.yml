@@ -1,0 +1,77 @@
+version: 2
+
+updates:
+  # npm / pnpm packages
+  - package-ecosystem: 'npm'
+    directory: '/'
+    target-branch: 'dev'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '04:00'
+      timezone: 'UTC'
+    open-pull-requests-limit: 10
+    rebase-strategy: 'auto'
+    labels:
+      - 'dependencies'
+    commit-message:
+      prefix: 'chore(deps)'
+      include: 'scope'
+
+    groups:
+      # prisma + @prisma/client must always be upgraded together
+      prisma:
+        patterns:
+          - 'prisma'
+          - '@prisma/*'
+
+      # Express runtime and its type definitions
+      express:
+        patterns:
+          - 'express'
+          - 'express-*'
+          - '@types/express'
+
+      # TypeScript compiler + typed linting (both parse the same AST)
+      typescript:
+        patterns:
+          - 'typescript'
+          - 'typescript-eslint'
+
+      # All @commitlint/* packages share a release cycle
+      commitlint:
+        patterns:
+          - '@commitlint/*'
+
+      # Formatting and linting toolchain
+      eslint-prettier:
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - 'prettier'
+          - 'lint-staged'
+
+      # Remaining @types/* stubs (excludes @types/express, grouped above)
+      types:
+        patterns:
+          - '@types/*'
+        exclude-patterns:
+          - '@types/express'
+
+  # GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    target-branch: 'dev'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '05:00'
+      timezone: 'UTC'
+    open-pull-requests-limit: 5
+    rebase-strategy: 'auto'
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+    commit-message:
+      prefix: 'chore(ci)'
+      include: 'scope'
