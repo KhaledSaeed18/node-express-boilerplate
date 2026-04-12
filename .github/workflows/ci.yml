@@ -28,16 +28,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      # Reads the version from "packageManager": "pnpm@10.x.x" in package.json
+      # Pin pnpm to the same version declared in package.json to avoid parser drift in CI.
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+        with:
+          version: 10.28.0
+          run_install: false
 
       # Reads the version from .nvmrc; built-in pnpm store caching via cache: pnpm
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
