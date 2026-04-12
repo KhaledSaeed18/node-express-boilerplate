@@ -95,17 +95,25 @@ export class NoteRepository extends BaseRepository implements INoteRepository {
 
     // Update a note by its ID
     public async update(id: string, data: UpdateNoteDTO): Promise<Note> {
-        return await this.prisma.note.update({
-            where: { id },
-            data,
-        });
+        try {
+            return await this.prisma.note.update({
+                where: { id },
+                data,
+            });
+        } catch (error) {
+            this.handlePrismaError(error);
+        }
     }
 
     // Delete a note by its ID
     public async delete(id: string): Promise<Note> {
-        return await this.prisma.note.delete({
-            where: { id },
-        });
+        try {
+            return await this.prisma.note.delete({
+                where: { id },
+            });
+        } catch (error) {
+            this.handlePrismaError(error);
+        }
     }
 
     // Check if a note exists by its ID

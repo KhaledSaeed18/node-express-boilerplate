@@ -6,7 +6,7 @@
 
 import type { Request, Response, NextFunction } from 'express';
 import jwt, { type JwtPayload, TokenExpiredError } from 'jsonwebtoken';
-import { errorHandler } from '../utils';
+import { createError } from '../utils';
 
 declare global {
     namespace Express {
@@ -32,7 +32,7 @@ export const protect = (req: Request, _res: Response, next: NextFunction): void 
     }
 
     if (!token) {
-        next(errorHandler(403, 'Access denied: No token provided'));
+        next(createError(403, 'Access denied: No token provided'));
         return;
     }
 
@@ -43,9 +43,9 @@ export const protect = (req: Request, _res: Response, next: NextFunction): void 
         next();
     } catch (error) {
         if (error instanceof TokenExpiredError) {
-            next(errorHandler(401, 'Unauthorized: Token has expired'));
+            next(createError(401, 'Unauthorized: Token has expired'));
             return;
         }
-        next(errorHandler(401, 'Unauthorized: Invalid token'));
+        next(createError(401, 'Unauthorized: Invalid token'));
     }
 };

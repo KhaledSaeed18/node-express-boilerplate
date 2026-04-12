@@ -47,7 +47,7 @@ export class AuthService implements IAuthService {
 
         // Generate unique username
         const emailPrefix = email.split('@')[0];
-        const username = await generateUniqueUsername(emailPrefix);
+        const username = await generateUniqueUsername(emailPrefix, this.userRepository);
 
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 12);

@@ -28,8 +28,6 @@ export class NoteRoute extends BaseRoute {
 
         this.router.get('/', noteLimiter, protect, paginateResults, this.noteController.getNotes);
 
-        this.router.get('/:id', noteLimiter, protect, this.noteController.getNote);
-
         this.router.get(
             '/search',
             noteLimiter,
@@ -37,6 +35,8 @@ export class NoteRoute extends BaseRoute {
             paginateResults,
             this.noteController.searchNotes,
         );
+
+        this.router.get('/:id', noteLimiter, protect, this.noteController.getNote);
 
         this.router.put(
             '/:id',

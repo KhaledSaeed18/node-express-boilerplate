@@ -5,7 +5,7 @@
  */
 
 import crypto from 'crypto';
-import { prisma } from '../database/prismaClient';
+import type { IUserRepository } from '../repository';
 
 export function generateUsername(base?: string): string {
     if (base) {
@@ -16,14 +16,16 @@ export function generateUsername(base?: string): string {
     return 'user' + crypto.randomInt(10000, 99999).toString();
 }
 
-export async function generateUniqueUsername(base: string, maxAttempts = 5): Promise<string> {
+export async function generateUniqueUsername(
+    base: string,
+    userRepository: IUserRepository,
+    maxAttempts = 5,
+): Promise<string> {
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        const usernameCandidate = generateUsername(base);
-        const exists = await prisma.user.findUnique({
-            where: { username: usernameCandidate },
-        });
+        const candidate = generateUsername(base);
+        const exists = await userRepository.usernameExists(candidate);
         if (!exists) {
-            return usernameCandidate;
+            return candidate;
         }
     }
     throw new Error('Failed to generate unique username after several attempts');

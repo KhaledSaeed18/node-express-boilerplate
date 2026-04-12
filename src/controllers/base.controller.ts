@@ -51,7 +51,7 @@ export abstract class BaseController {
         res.status(statusCode).json({
             statusCode,
             message,
-            data,
+            ...(data !== undefined && { data }),
         });
     }
 
