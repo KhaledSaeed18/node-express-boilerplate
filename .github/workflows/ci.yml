@@ -30,7 +30,7 @@ jobs:
 
       # Reads the version from "packageManager": "pnpm@10.x.x" in package.json
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       # Reads the version from .nvmrc; built-in pnpm store caching via cache: pnpm
       - name: Setup Node.js
