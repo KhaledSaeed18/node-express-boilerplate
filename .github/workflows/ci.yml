@@ -34,7 +34,7 @@ jobs:
 
       # Reads the version from .nvmrc; built-in pnpm store caching via cache: pnpm
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
