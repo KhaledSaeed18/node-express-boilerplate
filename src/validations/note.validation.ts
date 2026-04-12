@@ -1,15 +1,15 @@
 /*
-    * src/validations/note.validation.ts
-    * Validation middleware for note routes.
-    * This module exports validation functions for creating and updating notes using express-validator.
-*/
+ * src/validations/note.validation.ts
+ * Validation middleware for note routes.
+ * This module exports validation functions for creating and updating notes using express-validator.
+ */
 
-import { body } from 'express-validator';
+import { body, type ValidationChain } from 'express-validator';
 
 // Validation for creating a note
 // This validation checks that the title and content fields are provided and formatted correctly
 // It ensures that the title is a string, not empty, and within a specified length
-export const createNoteValidation = () => {
+export const createNoteValidation = (): ValidationChain[] => {
     return [
         body('title')
             .exists()
@@ -32,12 +32,12 @@ export const createNoteValidation = () => {
             .withMessage('Content must not be empty')
             .trim(),
     ];
-}
+};
 
 // Validation for updating a note
 // This validation allows the title and content fields to be optional
 // It checks that if they are provided, they meet the same criteria as for creating a note
-export const updateNoteValidation = () => {
+export const updateNoteValidation = (): ValidationChain[] => {
     return [
         body('title')
             .optional()
@@ -58,4 +58,4 @@ export const updateNoteValidation = () => {
             .withMessage('Content must not be empty')
             .trim(),
     ];
-}
+};

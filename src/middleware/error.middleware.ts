@@ -1,16 +1,22 @@
 /*
-    * src/middleware/error.middleware.ts
-    * Middleware for handling errors in the Express application.
-    * This middleware captures errors thrown in the application and formats them into a consistent response structure.
-*/
+ * src/middleware/error.middleware.ts
+ * Middleware for handling errors in the Express application.
+ * This middleware captures errors thrown in the application and formats them into a consistent response structure.
+ */
 
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { AppError, ValidationError } from '../errors';
+
+interface ValidationErrorDetail {
+    field: string;
+    message: string;
+    value?: unknown;
+}
 
 const errorMiddleware = (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
     let statusCode = 500;
     let message = 'Internal Server Error';
-    let errors: any = undefined;
+    let errors: ValidationErrorDetail[] | undefined = undefined;
 
     if (err instanceof ValidationError) {
         statusCode = err.statusCode;
@@ -37,12 +43,13 @@ const errorMiddleware = (err: Error, _req: Request, res: Response, _next: NextFu
     }
 
     if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
         console.error('Error:', err);
     }
 
     // Construct the response object
     // Include stack trace in non-production environments for debugging
-    const response: any = {
+    const response: Record<string, unknown> = {
         statusCode,
         message,
         ...(errors && { errors }),

@@ -1,21 +1,21 @@
-/* 
-    * src/controllers/auth.controller.ts
-    * This file contains the AuthController class which handles user authentication operations.
-    * It includes methods for signing up, signing in, refreshing access tokens, and logging out.
-    * It uses the IAuthService interface to interact with the authentication service.
-*/
+/*
+ * src/controllers/auth.controller.ts
+ * This file contains the AuthController class which handles user authentication operations.
+ * It includes methods for signing up, signing in, refreshing access tokens, and logging out.
+ * It uses the IAuthService interface to interact with the authentication service.
+ */
 
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from 'express';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
-import { AppError } from "../errors";
-import { IAuthService } from "../services";
-import { BaseController } from "./base.controller";
+import { AppError } from '../errors';
+import type { IAuthService } from '../services';
+import { BaseController } from './base.controller';
 
 export interface IAuthController {
     signUp(req: Request, res: Response, next: NextFunction): Promise<void>;
     signIn(req: Request, res: Response, next: NextFunction): Promise<void>;
     refreshAccessToken(req: Request, res: Response, next: NextFunction): Promise<void>;
-    logout(req: Request, res: Response, next: NextFunction): Promise<void>;
+    logout(req: Request, res: Response, next: NextFunction): void;
 }
 
 export class AuthController extends BaseController implements IAuthController {
@@ -32,9 +32,11 @@ export class AuthController extends BaseController implements IAuthController {
      */
     public signUp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            if (!this.handleValidationErrors(req, next)) return;
+            if (!this.handleValidationErrors(req, next)) {
+                return;
+            }
 
-            const { email, password } = req.body;
+            const { email, password } = req.body as { email: string; password: string };
 
             const result = await this.authService.signUp({ email, password });
 
@@ -50,9 +52,11 @@ export class AuthController extends BaseController implements IAuthController {
      */
     public signIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            if (!this.handleValidationErrors(req, next)) return;
+            if (!this.handleValidationErrors(req, next)) {
+                return;
+            }
 
-            const { email, password } = req.body;
+            const { email, password } = req.body as { email: string; password: string };
 
             const result = await this.authService.signIn({ email, password });
 
@@ -60,7 +64,7 @@ export class AuthController extends BaseController implements IAuthController {
             this.setCookie(res, 'accessToken', result.accessToken!, 15 * 60 * 1000); // 15 minutes
             this.setCookie(res, 'refreshToken', result.refreshToken!, 5 * 60 * 60 * 1000); // 5 hours
 
-            this.sendResponse(res, 200, "Sign in successful", result.user);
+            this.sendResponse(res, 200, 'Sign in successful', result.user);
         } catch (error) {
             this.handleError(error, next);
         }
@@ -70,29 +74,44 @@ export class AuthController extends BaseController implements IAuthController {
      * Refreshes the access token using the refresh token stored in cookies.
      * Validates the refresh token, calls the authService to refresh the token, and sets a new access token cookie.
      */
-    public refreshAccessToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    public refreshAccessToken = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         try {
-            const refreshToken = req.cookies.refreshToken;
+            const { refreshToken } = req.cookies as { refreshToken?: string };
 
             if (!refreshToken) {
-                return next(new AppError('Refresh token is required', 401));
+                next(new AppError('Refresh token is required', 401));
+                return;
             }
 
             if (typeof refreshToken !== 'string') {
-                return next(new AppError('Invalid refresh token', 400));
+                next(new AppError('Invalid refresh token', 400));
+                return;
             }
 
-            const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as jwt.JwtPayload;
-            const userId = decoded.id;
+            const decoded = jwt.verify(
+                refreshToken,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                process.env.JWT_REFRESH_SECRET!,
+            ) as jwt.JwtPayload;
+
+            // The JWT was signed with { userId } — cast the index-signature access explicitly.
+            const { userId } = decoded as unknown as { userId: string };
 
             const result = await this.authService.refreshToken(userId);
 
             this.setCookie(res, 'accessToken', result.accessToken, 15 * 60 * 1000); // 15 minutes
 
-            this.sendResponse(res, 200, "Token refreshed successfully", { accessToken: result.accessToken });
+            this.sendResponse(res, 200, 'Token refreshed successfully', {
+                accessToken: result.accessToken,
+            });
         } catch (error) {
             if (error instanceof TokenExpiredError) {
-                return next(new AppError('Refresh token expired', 401));
+                next(new AppError('Refresh token expired', 401));
+                return;
             }
             this.handleError(error, next);
         }
@@ -102,12 +121,12 @@ export class AuthController extends BaseController implements IAuthController {
      * Logs out the user by clearing the access and refresh token cookies.
      * Sends a response indicating successful logout.
      */
-    public logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    public logout = (_req: Request, res: Response, next: NextFunction): void => {
         try {
             this.clearCookie(res, 'accessToken');
             this.clearCookie(res, 'refreshToken');
 
-            this.sendResponse(res, 200, "Logged out successfully");
+            this.sendResponse(res, 200, 'Logged out successfully');
         } catch (error) {
             this.handleError(error, next);
         }

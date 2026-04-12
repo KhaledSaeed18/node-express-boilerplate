@@ -1,16 +1,16 @@
 /*
-    * AuthService class for handling user authentication.
-    * It provides methods for signing up, signing in, refreshing tokens, and validating users.
-    * It uses bcrypt for password hashing and JWT for token generation.
-    * It interacts with the IUserRepository to perform database operations.
-    * It throws specific errors for validation, authentication, and conflict scenarios.
-*/
+ * AuthService class for handling user authentication.
+ * It provides methods for signing up, signing in, refreshing tokens, and validating users.
+ * It uses bcrypt for password hashing and JWT for token generation.
+ * It interacts with the IUserRepository to perform database operations.
+ * It throws specific errors for validation, authentication, and conflict scenarios.
+ */
 
 import bcrypt from 'bcryptjs';
-import { User } from '@prisma/client';
-import { IUserRepository } from '../repository';
+import type { User } from '../generated/prisma/client';
+import type { IUserRepository } from '../repository';
 import { generateAccessToken, generateRefreshToken, generateUniqueUsername } from '../utils';
-import { SignUpDTO, SignInDTO, AuthResponseDTO, UserResponseDTO } from '../types';
+import type { SignUpDTO, SignInDTO, AuthResponseDTO, UserResponseDTO } from '../types';
 import { ConflictError, AuthenticationError, NotFoundError, ValidationError } from '../errors';
 
 export interface IAuthService {
@@ -21,14 +21,14 @@ export interface IAuthService {
 }
 
 export class AuthService implements IAuthService {
-    constructor(private userRepository: IUserRepository) { }
+    constructor(private userRepository: IUserRepository) {}
 
     /**
      * Signs up a new user.
      * Validates input, checks for existing user, hashes password, and creates user.
      * Returns user data in AuthResponseDTO format.
      */
-    async signUp(data: SignUpDTO): Promise<AuthResponseDTO> {
+    public async signUp(data: SignUpDTO): Promise<AuthResponseDTO> {
         const { email, password } = data;
 
         // Validate input
@@ -68,7 +68,7 @@ export class AuthService implements IAuthService {
      * Signs in a user.
      * Validates input, checks credentials, generates tokens, and returns user data.
      */
-    async signIn(data: SignInDTO): Promise<AuthResponseDTO> {
+    public async signIn(data: SignInDTO): Promise<AuthResponseDTO> {
         const { email, password } = data;
 
         // Validate input
@@ -97,7 +97,7 @@ export class AuthService implements IAuthService {
         return {
             user: userResponse,
             accessToken,
-            refreshToken
+            refreshToken,
         };
     }
 
@@ -105,8 +105,7 @@ export class AuthService implements IAuthService {
      * Refreshes the access token for a user.
      * Validates user ID, checks if user exists, and generates a new access token.
      */
-    async refreshToken(userId: string): Promise<{ accessToken: string }> {
-
+    public async refreshToken(userId: string): Promise<{ accessToken: string }> {
         // Validate user ID
         if (!userId) {
             throw new ValidationError('User ID is required');
@@ -127,7 +126,7 @@ export class AuthService implements IAuthService {
      * Validates a user by ID.
      * Checks if user exists and returns user data in UserResponseDTO format.
      */
-    async validateUser(userId: string): Promise<UserResponseDTO> {
+    public async validateUser(userId: string): Promise<UserResponseDTO> {
         // Validate user ID
         if (!userId) {
             throw new ValidationError('User ID is required');

@@ -1,13 +1,23 @@
 /*
-    * src/container/index.ts
-    * This file implements the Dependency Injection Container for the application.
-    * It manages the instantiation and retrieval of repositories, services, and controllers.
-*/
+ * src/container/index.ts
+ * This file implements the Dependency Injection Container for the application.
+ * It manages the instantiation and retrieval of repositories, services, and controllers.
+ */
 
-import { PrismaClient } from '@prisma/client';
-import { UserRepository, NoteRepository, type IUserRepository, type INoteRepository } from '../repository';
+import type { PrismaClient } from '../generated/prisma/client';
+import {
+    UserRepository,
+    NoteRepository,
+    type IUserRepository,
+    type INoteRepository,
+} from '../repository';
 import { AuthService, NoteService, type IAuthService, type INoteService } from '../services';
-import { AuthController, NoteController, type IAuthController, type INoteController } from '../controllers';
+import {
+    AuthController,
+    NoteController,
+    type IAuthController,
+    type INoteController,
+} from '../controllers';
 
 export interface IContainer {
     getUserRepository(): IUserRepository;
@@ -19,7 +29,7 @@ export interface IContainer {
 }
 
 export class Container implements IContainer {
-    private static instance: Container;
+    private static instance: Container | null = null;
     private prisma: PrismaClient;
     private userRepository!: IUserRepository;
     private noteRepository!: INoteRepository;
@@ -40,16 +50,13 @@ export class Container implements IContainer {
     // and to avoid multiple instances of repositories, services, and controllers
     // This method returns the existing instance or creates a new one if it doesn't exist
     public static getInstance(prisma: PrismaClient): Container {
-        if (!Container.instance) {
-            Container.instance = new Container(prisma);
-        }
-        return Container.instance;
+        return (Container.instance ??= new Container(prisma));
     }
 
     // Method to reset the singleton instance
     // This can be useful for testing purposes or when you need to reinitialize the container
     public static resetInstance(): void {
-        Container.instance = null as any;
+        Container.instance = null;
     }
 
     // Private methods to initialize repositories, services, and controllers

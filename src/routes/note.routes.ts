@@ -1,72 +1,52 @@
 /*
-    * NoteRoute class for defining routes related to notes.
-    * This class extends BaseRoute and initializes routes for creating, retrieving,
-    * updating, and deleting notes. 
-    * It uses middleware for rate limiting, pagination, and authentication.
-    * It is used to set up note-related routes in the application.
-*/
+ * NoteRoute class for defining routes related to notes.
+ * This class extends BaseRoute and initializes routes for creating, retrieving,
+ * updating, and deleting notes.
+ * It uses middleware for rate limiting, pagination, and authentication.
+ * It is used to set up note-related routes in the application.
+ */
 
-import { INoteController } from "../controllers";
-import { noteLimiter, paginateResults, protect } from "../middleware";
-import { createNoteValidation, updateNoteValidation } from "../validations";
-import { BaseRoute } from "./base.route";
+import type { INoteController } from '../controllers';
+import { noteLimiter, paginateResults, protect } from '../middleware';
+import { createNoteValidation, updateNoteValidation } from '../validations';
+import { BaseRoute } from './base.route';
 
 export class NoteRoute extends BaseRoute {
     private noteController!: INoteController;
-
-    constructor() {
-        super();
-    }
 
     protected initializeRoutes(): void {
         // Initialize the controller here, after the container is available
         this.noteController = this.container.getNoteController();
 
         this.router.post(
-            "/",
+            '/',
             noteLimiter,
             protect,
             createNoteValidation(),
-            this.noteController.createNote
+            this.noteController.createNote,
         );
 
+        this.router.get('/', noteLimiter, protect, paginateResults, this.noteController.getNotes);
+
+        this.router.get('/:id', noteLimiter, protect, this.noteController.getNote);
+
         this.router.get(
-            "/",
+            '/search',
             noteLimiter,
             protect,
             paginateResults,
-            this.noteController.getNotes
-        );
-
-        this.router.get(
-            "/:id",
-            noteLimiter,
-            protect,
-            this.noteController.getNote
-        );
-
-        this.router.get(
-            "/search",
-            noteLimiter,
-            protect,
-            paginateResults,
-            this.noteController.searchNotes
+            this.noteController.searchNotes,
         );
 
         this.router.put(
-            "/:id",
+            '/:id',
             noteLimiter,
             protect,
             updateNoteValidation(),
-            this.noteController.updateNote
+            this.noteController.updateNote,
         );
 
-        this.router.delete(
-            "/:id",
-            noteLimiter,
-            protect,
-            this.noteController.deleteNote
-        );
+        this.router.delete('/:id', noteLimiter, protect, this.noteController.deleteNote);
     }
 }
 

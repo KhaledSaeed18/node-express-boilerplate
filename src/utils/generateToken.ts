@@ -1,8 +1,8 @@
 /*
-    * src/utils/generateToken
-    * Utility functions for generating JWT tokens.
-    * This module exports functions to generate access and refresh tokens using JSON Web Tokens (JWT).
-*/
+ * src/utils/generateToken
+ * Utility functions for generating JWT tokens.
+ * This module exports functions to generate access and refresh tokens using JSON Web Tokens (JWT).
+ */
 
 import jwt from 'jsonwebtoken';
 
@@ -15,7 +15,7 @@ interface Payload {
 export const generateAccessToken = (userId: string): string => {
     const payload: Payload = { userId };
 
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET!, {
         expiresIn: '15m',
     });
 
@@ -28,7 +28,7 @@ export const generateAccessToken = (userId: string): string => {
 export const generateRefreshToken = (userId: string): string => {
     const payload: Payload = { userId };
 
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET as string, {
+    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
         expiresIn: '5h',
     });
 
