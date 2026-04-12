@@ -1,7 +1,7 @@
 /*
-    * src/constants/index.ts
-    * This file contains various constants used throughout the application.
-*/
+ * src/constants/index.ts
+ * This file contains various constants used throughout the application.
+ */
 
 // List of blocked email domains
 // These domains are often used for temporary or disposable email addresses
@@ -23,7 +23,7 @@ export const BLOCKED_DOMAINS = [
     'temp-mail.io',
     'mailcatch.com',
     'spamgourmet.com',
-    'mailnesia.com'
+    'mailnesia.com',
 ];
 
 // Commonly used passwords that should be avoided
@@ -48,5 +48,5 @@ export const COMMON_PASSWORDS = [
     'MasterKey1#',
     'MonkeyPass2@',
     'StarWars3!',
-    'BaseBall4$'
+    'BaseBall4$',
 ];

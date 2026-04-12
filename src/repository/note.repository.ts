@@ -1,12 +1,12 @@
 /*
-    * NoteRepository class for managing notes in the database
-    * This class provides methods for creating, finding, updating, and deleting notes,
-    * as well as checking ownership and existence of notes.
-*/
+ * NoteRepository class for managing notes in the database
+ * This class provides methods for creating, finding, updating, and deleting notes,
+ * as well as checking ownership and existence of notes.
+ */
 
-import { Note } from '@prisma/client';
+import type { Note } from '@prisma/client';
 import { BaseRepository } from './base.repository';
-import { CreateNoteDTO, UpdateNoteDTO, PaginationParams } from '../types';
+import type { CreateNoteDTO, UpdateNoteDTO, PaginationParams } from '../types';
 
 export interface INoteRepository {
     create(data: CreateNoteDTO): Promise<Note>;
@@ -24,21 +24,21 @@ export interface INoteRepository {
 
 export class NoteRepository extends BaseRepository implements INoteRepository {
     // Create a new note
-    async create(data: CreateNoteDTO): Promise<Note> {
+    public async create(data: CreateNoteDTO): Promise<Note> {
         return await this.prisma.note.create({
             data,
         });
     }
 
     // Find a note by its ID
-    async findById(id: string): Promise<Note | null> {
+    public async findById(id: string): Promise<Note | null> {
         return await this.prisma.note.findUnique({
             where: { id },
         });
     }
 
     // Find a note by its ID and user ID
-    async findByIdAndUserId(id: string, userId: string): Promise<Note | null> {
+    public async findByIdAndUserId(id: string, userId: string): Promise<Note | null> {
         return await this.prisma.note.findFirst({
             where: {
                 id,
@@ -48,17 +48,21 @@ export class NoteRepository extends BaseRepository implements INoteRepository {
     }
 
     // Find notes by user ID with optional pagination
-    async findByUserId(userId: string, pagination?: PaginationParams): Promise<Note[]> {
+    public async findByUserId(userId: string, pagination?: PaginationParams): Promise<Note[]> {
         return await this.findManyWithPagination<Note>(
             this.prisma.note,
             { userId },
             { createdAt: 'desc' },
-            pagination
+            pagination,
         );
     }
 
     // Search notes by user ID with optional pagination
-    async searchByUserId(userId: string, query: string, pagination?: PaginationParams): Promise<Note[]> {
+    public async searchByUserId(
+        userId: string,
+        query: string,
+        pagination?: PaginationParams,
+    ): Promise<Note[]> {
         return await this.findManyWithPagination<Note>(
             this.prisma.note,
             {
@@ -69,17 +73,17 @@ export class NoteRepository extends BaseRepository implements INoteRepository {
                 ],
             },
             { createdAt: 'desc' },
-            pagination
+            pagination,
         );
     }
 
     // Count notes by user ID
-    async countByUserId(userId: string): Promise<number> {
+    public async countByUserId(userId: string): Promise<number> {
         return await this.count(this.prisma.note, { userId });
     }
 
     // Count notes by user ID with search query
-    async countSearchByUserId(userId: string, query: string): Promise<number> {
+    public async countSearchByUserId(userId: string, query: string): Promise<number> {
         return await this.count(this.prisma.note, {
             userId,
             OR: [
@@ -90,7 +94,7 @@ export class NoteRepository extends BaseRepository implements INoteRepository {
     }
 
     // Update a note by its ID
-    async update(id: string, data: UpdateNoteDTO): Promise<Note> {
+    public async update(id: string, data: UpdateNoteDTO): Promise<Note> {
         return await this.prisma.note.update({
             where: { id },
             data,
@@ -98,19 +102,19 @@ export class NoteRepository extends BaseRepository implements INoteRepository {
     }
 
     // Delete a note by its ID
-    async delete(id: string): Promise<Note> {
+    public async delete(id: string): Promise<Note> {
         return await this.prisma.note.delete({
             where: { id },
         });
     }
 
     // Check if a note exists by its ID
-    async noteExists(id: string): Promise<boolean> {
+    public async noteExists(id: string): Promise<boolean> {
         return await this.exists(this.prisma.note, { id });
     }
 
     // Check if a user owns a note by note ID and user ID
-    async userOwnsNote(noteId: string, userId: string): Promise<boolean> {
+    public async userOwnsNote(noteId: string, userId: string): Promise<boolean> {
         return await this.exists(this.prisma.note, { id: noteId, userId });
     }
 }

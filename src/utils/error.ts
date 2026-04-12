@@ -1,13 +1,16 @@
 /*
-    * src/utils/error
-    * Error handling utilities for the Express App.
-    * This module defines custom error classes and a utility function for creating error objects.
-*/
+ * src/utils/error
+ * Error handling utilities for the Express App.
+ * This module defines custom error classes and a utility function for creating error objects.
+ */
 
-export const errorHandler = (statusCode: number, message: string | string[]) => {
-    const errorMessage = Array.isArray(message) ? message : [message];
-    const error: any = new Error(errorMessage.join(', '));
+interface HttpError extends Error {
+    statusCode: number;
+}
+
+export const errorHandler = (statusCode: number, message: string | string[]): HttpError => {
+    const errorMessage = Array.isArray(message) ? message.join(', ') : message;
+    const error = new Error(errorMessage) as HttpError;
     error.statusCode = statusCode;
-    error.message = errorMessage.length === 1 ? errorMessage[0] : errorMessage;
     return error;
 };

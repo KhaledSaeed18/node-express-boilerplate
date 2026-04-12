@@ -1,11 +1,11 @@
 /*
-    * src/middleware/auth.middleware.ts
-    * Middleware for protecting routes by verifying JWT tokens.
-    * This middleware checks for a valid JWT token in the request headers or cookies.
-*/
+ * src/middleware/auth.middleware.ts
+ * Middleware for protecting routes by verifying JWT tokens.
+ * This middleware checks for a valid JWT token in the request headers or cookies.
+ */
 
-import { Request, Response, NextFunction } from 'express';
-import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
+import type { Request, Response, NextFunction } from 'express';
+import jwt, { type JwtPayload, TokenExpiredError } from 'jsonwebtoken';
 import { errorHandler } from '../utils';
 
 declare global {
@@ -21,24 +21,30 @@ declare global {
 // If the token is valid, it decodes the user information and attaches it to the request object
 // If the token is missing or invalid, it returns an error response
 export const protect = (req: Request, _res: Response, next: NextFunction): void => {
-    let token = req.cookies.accessToken;
+    const cookieToken = req.cookies.accessToken as string | undefined;
+    const authHeader = req.headers.authorization;
+
+    let token: string | undefined;
+    if (cookieToken) {
+        token = cookieToken;
+    } else if (authHeader?.startsWith('Bearer ')) {
+        token = authHeader.slice(7);
+    }
 
     if (!token) {
-        const authHeader = req.headers['authorization'];
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return next(errorHandler(403, 'Access denied: No token provided'));
-        }
-        token = authHeader.split(' ')[1];
+        next(errorHandler(403, 'Access denied: No token provided'));
+        return;
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
         req.user = decoded;
 
         next();
     } catch (error) {
         if (error instanceof TokenExpiredError) {
-            return next(errorHandler(401, 'Unauthorized: Token has expired'));
+            next(errorHandler(401, 'Unauthorized: Token has expired'));
+            return;
         }
         next(errorHandler(401, 'Unauthorized: Invalid token'));
     }

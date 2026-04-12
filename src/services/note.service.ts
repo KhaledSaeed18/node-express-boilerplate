@@ -1,20 +1,33 @@
 /*
-    * NoteService class for handling note-related operations.
-    * It provides methods for creating, retrieving, updating, and deleting notes.
-    * It also includes methods for validating note ownership and searching notes.
-    * It interacts with the INoteRepository to perform database operations.
-    * It throws specific errors for validation, authorization, and not found scenarios.
-*/
+ * NoteService class for handling note-related operations.
+ * It provides methods for creating, retrieving, updating, and deleting notes.
+ * It also includes methods for validating note ownership and searching notes.
+ * It interacts with the INoteRepository to perform database operations.
+ * It throws specific errors for validation, authorization, and not found scenarios.
+ */
 
-import { Note } from '@prisma/client';
-import { INoteRepository } from '../repository';
-import { CreateNoteDTO, UpdateNoteDTO, NoteResponseDTO, PaginationParams, PaginatedResult } from '../types';
+import type { Note } from '@prisma/client';
+import type { INoteRepository } from '../repository';
+import type {
+    CreateNoteDTO,
+    UpdateNoteDTO,
+    NoteResponseDTO,
+    PaginationParams,
+    PaginatedResult,
+} from '../types';
 import { NotFoundError, ValidationError, AuthorizationError } from '../errors';
 
 export interface INoteService {
     createNote(userId: string, data: Omit<CreateNoteDTO, 'userId'>): Promise<NoteResponseDTO>;
-    getUserNotes(userId: string, pagination?: PaginationParams): Promise<PaginatedResult<NoteResponseDTO>>;
-    searchUserNotes(userId: string, query: string, pagination?: PaginationParams): Promise<PaginatedResult<NoteResponseDTO>>;
+    getUserNotes(
+        userId: string,
+        pagination?: PaginationParams,
+    ): Promise<PaginatedResult<NoteResponseDTO>>;
+    searchUserNotes(
+        userId: string,
+        query: string,
+        pagination?: PaginationParams,
+    ): Promise<PaginatedResult<NoteResponseDTO>>;
     getNoteById(userId: string, noteId: string): Promise<NoteResponseDTO>;
     updateNote(userId: string, noteId: string, data: UpdateNoteDTO): Promise<NoteResponseDTO>;
     deleteNote(userId: string, noteId: string): Promise<NoteResponseDTO>;
@@ -22,13 +35,16 @@ export interface INoteService {
 }
 
 export class NoteService implements INoteService {
-    constructor(private noteRepository: INoteRepository) { }
+    constructor(private noteRepository: INoteRepository) {}
 
     /**
      * Creates a new note for the user.
      * Validates input, creates note, and returns it in NoteResponseDTO format.
      */
-    async createNote(userId: string, data: Omit<CreateNoteDTO, 'userId'>): Promise<NoteResponseDTO> {
+    public async createNote(
+        userId: string,
+        data: Omit<CreateNoteDTO, 'userId'>,
+    ): Promise<NoteResponseDTO> {
         const { title, content } = data;
 
         // Create note (validation is handled by middleware)
@@ -45,7 +61,10 @@ export class NoteService implements INoteService {
      * Retrieves all notes for a user with optional pagination.
      * Returns paginated result of notes in NoteResponseDTO format.
      */
-    async getUserNotes(userId: string, pagination?: PaginationParams): Promise<PaginatedResult<NoteResponseDTO>> {
+    public async getUserNotes(
+        userId: string,
+        pagination?: PaginationParams,
+    ): Promise<PaginatedResult<NoteResponseDTO>> {
         // Validate user ID
         if (!userId) {
             throw new ValidationError('User ID is required');
@@ -58,13 +77,16 @@ export class NoteService implements INoteService {
         ]);
 
         // Convert notes to response DTO format
-        const notesDTO = notes.map(note => this.toNoteResponseDTO(note));
+        const notesDTO = notes.map((note) => this.toNoteResponseDTO(note));
 
         // Return paginated result
         return {
             data: notesDTO,
             total,
-            page: pagination?.skip && pagination?.take ? Math.floor(pagination.skip / pagination.take) + 1 : undefined,
+            page:
+                pagination?.skip && pagination.take
+                    ? Math.floor(pagination.skip / pagination.take) + 1
+                    : undefined,
             limit: pagination?.take,
             totalPages: pagination?.take ? Math.ceil(total / pagination.take) : undefined,
         };
@@ -74,7 +96,11 @@ export class NoteService implements INoteService {
      * Searches notes for a user by query with optional pagination.
      * Returns paginated result of notes in NoteResponseDTO format.
      */
-    async searchUserNotes(userId: string, query: string, pagination?: PaginationParams): Promise<PaginatedResult<NoteResponseDTO>> {
+    public async searchUserNotes(
+        userId: string,
+        query: string,
+        pagination?: PaginationParams,
+    ): Promise<PaginatedResult<NoteResponseDTO>> {
         // Validate user ID and query
         if (!userId) {
             throw new ValidationError('User ID is required');
@@ -93,13 +119,16 @@ export class NoteService implements INoteService {
         ]);
 
         // Convert notes to response DTO format
-        const notesDTO = notes.map(note => this.toNoteResponseDTO(note));
+        const notesDTO = notes.map((note) => this.toNoteResponseDTO(note));
 
         // Return paginated result
         return {
             data: notesDTO,
             total,
-            page: pagination?.skip && pagination?.take ? Math.floor(pagination.skip / pagination.take) + 1 : undefined,
+            page:
+                pagination?.skip && pagination.take
+                    ? Math.floor(pagination.skip / pagination.take) + 1
+                    : undefined,
             limit: pagination?.take,
             totalPages: pagination?.take ? Math.ceil(total / pagination.take) : undefined,
         };
@@ -109,7 +138,7 @@ export class NoteService implements INoteService {
      * Retrieves a note by its ID for a user.
      * Validates ownership and returns note in NoteResponseDTO format.
      */
-    async getNoteById(userId: string, noteId: string): Promise<NoteResponseDTO> {
+    public async getNoteById(userId: string, noteId: string): Promise<NoteResponseDTO> {
         // Validate user ID and note ID
         if (!userId || !noteId) {
             throw new ValidationError('User ID and Note ID are required');
@@ -134,7 +163,11 @@ export class NoteService implements INoteService {
      * Updates a note by its ID for a user.
      * Validates ownership, updates note, and returns it in NoteResponseDTO format.
      */
-    async updateNote(userId: string, noteId: string, data: UpdateNoteDTO): Promise<NoteResponseDTO> {
+    public async updateNote(
+        userId: string,
+        noteId: string,
+        data: UpdateNoteDTO,
+    ): Promise<NoteResponseDTO> {
         // Validate user ID and note ID
         if (!userId || !noteId) {
             throw new ValidationError('User ID and Note ID are required');
@@ -145,8 +178,12 @@ export class NoteService implements INoteService {
 
         // Prepare update data (validation is handled by middleware)
         const updateData: UpdateNoteDTO = {};
-        if (data.title !== undefined) updateData.title = data.title.trim();
-        if (data.content !== undefined) updateData.content = data.content.trim();
+        if (data.title !== undefined) {
+            updateData.title = data.title.trim();
+        }
+        if (data.content !== undefined) {
+            updateData.content = data.content.trim();
+        }
 
         // Check if there's anything to update
         if (Object.keys(updateData).length === 0) {
@@ -164,7 +201,7 @@ export class NoteService implements INoteService {
      * Deletes a note by its ID for a user.
      * Validates ownership, deletes note, and returns it in NoteResponseDTO format.
      */
-    async deleteNote(userId: string, noteId: string): Promise<NoteResponseDTO> {
+    public async deleteNote(userId: string, noteId: string): Promise<NoteResponseDTO> {
         // Validate user ID and note ID
         if (!userId || !noteId) {
             throw new ValidationError('User ID and Note ID are required');
@@ -184,7 +221,7 @@ export class NoteService implements INoteService {
      * Validates if a user owns a note by note ID and user ID.
      * Throws NotFoundError if note does not exist or AuthorizationError if user does not own the note.
      */
-    async validateNoteOwnership(userId: string, noteId: string): Promise<void> {
+    public async validateNoteOwnership(userId: string, noteId: string): Promise<void> {
         // Validate user ID and note ID
         const noteExists = await this.noteRepository.noteExists(noteId);
         if (!noteExists) {

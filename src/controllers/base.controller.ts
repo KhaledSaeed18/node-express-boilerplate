@@ -1,12 +1,12 @@
 /*
-    * src/controllers/base.controller.ts
-    * This file contains the BaseController class which provides common methods for handling requests and responses.
-    * It includes methods for validation error handling, error handling, sending responses, pagination, user ID retrieval, and cookie management.
-*/
+ * src/controllers/base.controller.ts
+ * This file contains the BaseController class which provides common methods for handling requests and responses.
+ * It includes methods for validation error handling, error handling, sending responses, pagination, user ID retrieval, and cookie management.
+ */
 
-import { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator";
-import { AppError, ValidationError } from "../errors";
+import type { NextFunction, Request, Response } from 'express';
+import { validationResult } from 'express-validator';
+import { AppError, ValidationError } from '../errors';
 
 export abstract class BaseController {
     /**
@@ -16,15 +16,15 @@ export abstract class BaseController {
     protected handleValidationErrors(req: Request, next: NextFunction): boolean {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            const errorMessages = errors.array().map(err => ({
+            const errorMessages = errors.array().map((err) => ({
                 field: err.type === 'field' ? err.path : 'unknown',
-                message: err.msg,
-                value: err.type === 'field' ? err.value : undefined
+                message: err.msg as string,
+                value: err.type === 'field' ? (err.value as unknown) : undefined,
             }));
 
-            const formattedMessage = errorMessages.map(err =>
-                `${err.field}: ${err.message}`
-            ).join(', ');
+            const formattedMessage = errorMessages
+                .map((err) => `${err.field}: ${err.message}`)
+                .join(', ');
 
             next(new ValidationError(formattedMessage, errorMessages));
             return false;
@@ -42,11 +42,16 @@ export abstract class BaseController {
     /**
      * Sends a response with the specified status code, message, and data.
      */
-    protected sendResponse(res: Response, statusCode: number, message: string, data?: any): void {
+    protected sendResponse(
+        res: Response,
+        statusCode: number,
+        message: string,
+        data?: unknown,
+    ): void {
         res.status(statusCode).json({
             statusCode,
             message,
-            data
+            data,
         });
     }
 
@@ -57,7 +62,7 @@ export abstract class BaseController {
         res: Response,
         statusCode: number,
         message: string,
-        data: any,
+        data: unknown,
         pagination: {
             currentPage?: number;
             totalPages?: number;
@@ -65,13 +70,13 @@ export abstract class BaseController {
             itemsPerPage?: number;
             hasNext?: boolean;
             hasPrev?: boolean;
-        }
+        },
     ): void {
         res.status(statusCode).json({
             statusCode,
             message,
             data,
-            pagination
+            pagination,
         });
     }
 
@@ -80,7 +85,7 @@ export abstract class BaseController {
      * If the user ID is not found, it passes an error to the next middleware.
      */
     protected getUserId(req: Request, next: NextFunction): string | null {
-        const userId = req.user?.userId;
+        const { userId } = (req.user as { userId?: string } | undefined) ?? {};
         if (!userId) {
             next(new AppError('Unauthorized', 401));
             return null;
@@ -96,7 +101,7 @@ export abstract class BaseController {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge
+            maxAge,
         });
     }
 
