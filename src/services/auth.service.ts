@@ -7,7 +7,7 @@
  */
 
 import bcrypt from 'bcryptjs';
-import type { User } from '@prisma/client';
+import type { User } from '../generated/prisma/client';
 import type { IUserRepository } from '../repository';
 import { generateAccessToken, generateRefreshToken, generateUniqueUsername } from '../utils';
 import type { SignUpDTO, SignInDTO, AuthResponseDTO, UserResponseDTO } from '../types';

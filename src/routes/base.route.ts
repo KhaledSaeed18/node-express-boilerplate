@@ -8,7 +8,7 @@
 
 import express, { type Router } from 'express';
 import { Container } from '../container';
-import prisma from '../database/prismaClient';
+import { prisma } from '../database/prismaClient';
 
 export abstract class BaseRoute {
     protected router: Router;

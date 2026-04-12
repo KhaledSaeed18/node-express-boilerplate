@@ -5,7 +5,7 @@
  */
 
 import crypto from 'crypto';
-import prisma from '../database/prismaClient';
+import { prisma } from '../database/prismaClient';
 
 export function generateUsername(base?: string): string {
     if (base) {

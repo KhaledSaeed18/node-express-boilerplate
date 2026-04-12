@@ -4,7 +4,7 @@
  * as well as checking ownership and existence of notes.
  */
 
-import type { Note } from '@prisma/client';
+import type { Note } from '../generated/prisma/client';
 import { BaseRepository } from './base.repository';
 import type { CreateNoteDTO, UpdateNoteDTO, PaginationParams } from '../types';
 

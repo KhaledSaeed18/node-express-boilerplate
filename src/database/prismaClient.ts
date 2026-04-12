@@ -1,22 +1,43 @@
-/*
- * src/database/prismaClient.ts
- * This file initializes the Prisma Client and connects to the database.
- * It exports the Prisma Client instance for use in other parts of the application.
- */
+import { PrismaPg } from '@prisma/adapter-pg';
+import { type Prisma, PrismaClient } from '../generated/prisma/client';
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
-async function connectPrisma(): Promise<void> {
-    try {
-        await prisma.$connect();
-        console.log('Prisma connected to database successfully');
-    } catch (error) {
-        console.error('Prisma failed to connect:', error);
-    }
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+    throw new Error('DATABASE_URL environment variable is not set');
 }
 
-void connectPrisma();
+const isDevelopment = (): boolean => process.env.NODE_ENV === 'development';
 
-export default prisma;
+const logger = console;
+
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({
+    adapter: adapter,
+    log: [
+        { emit: 'event', level: 'query' },
+        { emit: 'event', level: 'error' },
+        { emit: 'event', level: 'warn' },
+    ],
+});
+
+type QueryEvent = Prisma.QueryEvent;
+type LogEvent = Prisma.LogEvent;
+
+if (isDevelopment()) {
+    prisma.$on('query', (event: QueryEvent) => {
+        logger.debug(
+            `[Prisma Query] [${event.timestamp.toISOString()}] ${event.duration.toString()}ms ${event.query}`,
+        );
+        logger.debug(`[Prisma Query Params] ${event.params}`);
+    });
+}
+
+prisma.$on('error', (event: LogEvent) => {
+    logger.error(`[Prisma Error] [${event.timestamp.toISOString()}] ${event.message}`);
+});
+
+prisma.$on('warn', (event: LogEvent) => {
+    logger.warn(`[Prisma Warning] [${event.timestamp.toISOString()}] ${event.message}`);
+});
+
+export { prisma };

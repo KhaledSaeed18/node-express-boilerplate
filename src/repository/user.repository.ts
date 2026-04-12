@@ -4,7 +4,7 @@
  * It provides methods to interact with the user data in the database.
  */
 
-import type { User } from '@prisma/client';
+import type { User } from '../generated/prisma/client';
 import { BaseRepository } from './base.repository';
 import type { CreateUserDTO } from '../types';
 

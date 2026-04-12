@@ -10,7 +10,7 @@
 // Proper generic typing is tracked as a Phase 2 improvement.
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment */
 
-import type { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '../generated/prisma/client';
 import type { PaginationParams } from '../types';
 
 export abstract class BaseRepository {

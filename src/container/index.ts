@@ -4,7 +4,7 @@
  * It manages the instantiation and retrieval of repositories, services, and controllers.
  */
 
-import type { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '../generated/prisma/client';
 import {
     UserRepository,
     NoteRepository,

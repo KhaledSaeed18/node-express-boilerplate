@@ -6,7 +6,7 @@
  * It throws specific errors for validation, authorization, and not found scenarios.
  */
 
-import type { Note } from '@prisma/client';
+import type { Note } from '../generated/prisma/client';
 import type { INoteRepository } from '../repository';
 import type {
     CreateNoteDTO,
