@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+  push:
+    branches:
+      - dev
+
+# Cancel any in-progress run for the same branch/PR so every new push to a PR doesn't queue behind the previous one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Format · Lint · Type-check · Build
+    runs-on: ubuntu-latest
+
+    # Prisma v7 reads DATABASE_URL from prisma.config.ts at generate time.
+    # No real database is started — this value is never used to connect.
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Reads the version from "packageManager": "pnpm@10.x.x" in package.json
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      # Reads the version from .nvmrc; built-in pnpm store caching via cache: pnpm
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Generates src/generated/prisma from prisma/schema.prisma.
+      # Must run before type-check so @prisma/client types are available.
+      - name: Generate Prisma client
+        run: pnpm prisma:generate
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Lint check
+        run: pnpm lint:check
+
+      - name: Type check
+        run: pnpm type:check
+
+      - name: Build
+        run: pnpm build
