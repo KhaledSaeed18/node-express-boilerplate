@@ -69,7 +69,7 @@ export class NoteController extends BaseController implements INoteController {
                 totalPages: result.totalPages,
                 totalItems: result.total,
                 itemsPerPage: result.limit,
-                hasNext: result.page ? result.page < result.totalPages! : false,
+                hasNext: result.page ? result.page < (result.totalPages ?? 0) : false,
                 hasPrev: result.page ? result.page > 1 : false,
             });
         } catch (error) {
@@ -113,7 +113,7 @@ export class NoteController extends BaseController implements INoteController {
                     totalPages: result.totalPages,
                     totalItems: result.total,
                     itemsPerPage: result.limit,
-                    hasNext: result.page ? result.page < result.totalPages! : false,
+                    hasNext: result.page ? result.page < (result.totalPages ?? 0) : false,
                     hasPrev: result.page ? result.page > 1 : false,
                 },
             );
