@@ -8,6 +8,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
 import { AppError } from '../errors';
+import { config } from '../config/env';
 import type { IAuthService } from '../services';
 import { BaseController } from './base.controller';
 
@@ -32,10 +33,6 @@ export class AuthController extends BaseController implements IAuthController {
      */
     public signUp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            if (!this.handleValidationErrors(req, next)) {
-                return;
-            }
-
             const { email, password } = req.body as { email: string; password: string };
 
             const result = await this.authService.signUp({ email, password });
@@ -52,10 +49,6 @@ export class AuthController extends BaseController implements IAuthController {
      */
     public signIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            if (!this.handleValidationErrors(req, next)) {
-                return;
-            }
-
             const { email, password } = req.body as { email: string; password: string };
 
             const result = await this.authService.signIn({ email, password });
@@ -92,11 +85,7 @@ export class AuthController extends BaseController implements IAuthController {
                 return;
             }
 
-            const decoded = jwt.verify(
-                refreshToken,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                process.env.JWT_REFRESH_SECRET!,
-            ) as jwt.JwtPayload;
+            const decoded = jwt.verify(refreshToken, config.JWT_REFRESH_SECRET) as jwt.JwtPayload;
 
             // The JWT was signed with { userId } — cast the index-signature access explicitly.
             const { userId } = decoded as unknown as { userId: string };

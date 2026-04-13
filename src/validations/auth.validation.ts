@@ -1,65 +1,45 @@
 /*
  * src/validations/auth.validation.ts
- * Validation middleware for authentication routes.
- * This module exports validation functions for user signup and signin requests using express-validator.
+ * Zod schemas and request-handler middleware for authentication routes.
  */
 
-import { body, type ValidationChain } from 'express-validator';
+import { z } from 'zod';
+import type { RequestHandler } from 'express';
+import { validateBody } from '../lib/validate';
 import { BLOCKED_DOMAINS, COMMON_PASSWORDS } from '../constants';
 
-// Validation for user signup
-// This validation checks the email format, ensures the password meets security requirements,
-// and checks for blocked email domains and common passwords
-export const signupValidation = (): ValidationChain[] => {
-    return [
-        body('email')
-            .notEmpty()
-            .withMessage('Email is required')
-            .isEmail()
-            .withMessage('Invalid email format')
-            .normalizeEmail()
-            .custom((email: string) => {
-                const domain = email.split('@')[1];
-                if (BLOCKED_DOMAINS.includes(domain)) {
-                    throw new Error('Email domain not allowed');
-                }
-                return true;
-            }),
-        body('password')
-            .notEmpty()
-            .withMessage('Password is required')
-            .isLength({ min: 8 })
-            .withMessage('Password must be at least 8 characters')
-            .isLength({ max: 30 })
-            .withMessage('Password must not be more than 30 characters')
-            .matches(/[a-z]/)
-            .withMessage('Password must contain at least one lowercase letter')
-            .matches(/[A-Z]/)
-            .withMessage('Password must contain at least one uppercase letter')
-            .matches(/\d/)
-            .withMessage('Password must contain at least one number')
-            .matches(/[\W_]/)
-            .withMessage('Password must contain at least one special character')
-            .custom((value: string) => {
-                if (COMMON_PASSWORDS.includes(value)) {
-                    throw new Error('Password is too common');
-                }
-                return true;
-            }),
-    ];
-};
+export const signupSchema = z.object({
+    email: z
+        .string({ error: 'Email is required' })
+        .trim()
+        .toLowerCase()
+        .check(z.email('Invalid email format'))
+        .refine(
+            (email) => !BLOCKED_DOMAINS.includes(email.split('@')[1] ?? ''),
+            'Email domain not allowed',
+        ),
+    password: z
+        .string({ error: 'Password is required' })
+        .min(8, 'Password must be at least 8 characters')
+        .max(30, 'Password must not be more than 30 characters')
+        .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+        .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+        .regex(/\d/, 'Password must contain at least one number')
+        .regex(/[\W_]/, 'Password must contain at least one special character')
+        .refine((val) => !COMMON_PASSWORDS.includes(val), 'Password is too common'),
+});
 
-// Validation for user signin
-// This validation checks that the email and password fields are provided and formatted correctly
-// It does not check for blocked domains or common passwords, as those are typically handled during signup
-export const signinValidation = (): ValidationChain[] => {
-    return [
-        body('email')
-            .notEmpty()
-            .withMessage('Email is required')
-            .isEmail()
-            .withMessage('Invalid email format')
-            .normalizeEmail(),
-        body('password').notEmpty().withMessage('Password is required'),
-    ];
-};
+export const signinSchema = z.object({
+    email: z
+        .string({ error: 'Email is required' })
+        .trim()
+        .toLowerCase()
+        .check(z.email('Invalid email format')),
+    password: z.string({ error: 'Password is required' }).min(1, 'Password is required'),
+});
+
+export type SignupInput = z.infer<typeof signupSchema>;
+export type SigninInput = z.infer<typeof signinSchema>;
+
+export const signupValidation: RequestHandler = validateBody(signupSchema);
+export const signinValidation: RequestHandler = validateBody(signinSchema);

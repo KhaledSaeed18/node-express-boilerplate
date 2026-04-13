@@ -22,7 +22,7 @@ export class NoteRoute extends BaseRoute {
             '/',
             noteLimiter,
             protect,
-            createNoteValidation(),
+            createNoteValidation,
             this.noteController.createNote,
         );
 
@@ -42,7 +42,7 @@ export class NoteRoute extends BaseRoute {
             '/:id',
             noteLimiter,
             protect,
-            updateNoteValidation(),
+            updateNoteValidation,
             this.noteController.updateNote,
         );
 

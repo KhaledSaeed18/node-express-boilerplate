@@ -6,6 +6,7 @@
 
 import type { Request, Response, NextFunction } from 'express';
 import jwt, { type JwtPayload, TokenExpiredError } from 'jsonwebtoken';
+import { config } from '../config/env';
 import { createError } from '../utils';
 
 declare global {
@@ -37,7 +38,7 @@ export const protect = (req: Request, _res: Response, next: NextFunction): void 
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+        const decoded = jwt.verify(token, config.JWT_SECRET) as JwtPayload;
         req.user = decoded;
 
         next();

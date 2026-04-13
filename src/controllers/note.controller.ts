@@ -32,10 +32,6 @@ export class NoteController extends BaseController implements INoteController {
      */
     public createNote = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            if (!this.handleValidationErrors(req, next)) {
-                return;
-            }
-
             const userId = this.getUserId(req, next);
             if (!userId) {
                 return;
@@ -158,10 +154,6 @@ export class NoteController extends BaseController implements INoteController {
      */
     public updateNote = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            if (!this.handleValidationErrors(req, next)) {
-                return;
-            }
-
             const userId = this.getUserId(req, next);
             if (!userId) {
                 return;

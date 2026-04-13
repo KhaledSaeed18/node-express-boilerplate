@@ -1,16 +1,11 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import { type Prisma, PrismaClient } from '../generated/prisma/client';
+import { config } from '../config/env';
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-    throw new Error('DATABASE_URL environment variable is not set');
-}
-
-const isDevelopment = (): boolean => process.env.NODE_ENV === 'development';
+const adapter = new PrismaPg({ connectionString: config.DATABASE_URL });
 
 const logger = console;
 
-const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({
     adapter: adapter,
     log: [
@@ -23,7 +18,7 @@ const prisma = new PrismaClient({
 type QueryEvent = Prisma.QueryEvent;
 type LogEvent = Prisma.LogEvent;
 
-if (isDevelopment()) {
+if (config.NODE_ENV === 'development') {
     prisma.$on('query', (event: QueryEvent) => {
         logger.debug(
             `[Prisma Query] [${event.timestamp.toISOString()}] ${event.duration.toString()}ms ${event.query}`,
