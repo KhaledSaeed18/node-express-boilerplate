@@ -4,21 +4,19 @@
  * This file sets up the Express application, middleware, routes, and error handling.
  */
 
+import { config } from './config/env';
 import express from 'express';
 import helmet from 'helmet';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { errorMiddleware } from './middleware';
 import { authRoutes, noteRoutes } from './routes';
 
-dotenv.config();
-
 const app = express();
 
 const corsOptions = {
-    origin: [process.env.CLIENT_URL!],
+    origin: [config.CLIENT_URL],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
 };
@@ -30,15 +28,13 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-const port = process.env.PORT!;
-
 // Start the server
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+app.listen(config.PORT, () => {
+    // eslint-disable-next-line no-console
+    console.log(`Server is running on port ${String(config.PORT)}`);
 });
 
-const version = process.env.API_VERSION!;
-const baseUrl = `${process.env.BASE_URL!}/${version}`;
+const baseUrl = `${config.BASE_URL}/${config.API_VERSION}`;
 
 // Define routes
 app.use(`${baseUrl}/auth`, authRoutes);

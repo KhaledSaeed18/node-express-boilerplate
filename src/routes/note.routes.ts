@@ -22,13 +22,11 @@ export class NoteRoute extends BaseRoute {
             '/',
             noteLimiter,
             protect,
-            createNoteValidation(),
+            createNoteValidation,
             this.noteController.createNote,
         );
 
         this.router.get('/', noteLimiter, protect, paginateResults, this.noteController.getNotes);
-
-        this.router.get('/:id', noteLimiter, protect, this.noteController.getNote);
 
         this.router.get(
             '/search',
@@ -38,11 +36,13 @@ export class NoteRoute extends BaseRoute {
             this.noteController.searchNotes,
         );
 
+        this.router.get('/:id', noteLimiter, protect, this.noteController.getNote);
+
         this.router.put(
             '/:id',
             noteLimiter,
             protect,
-            updateNoteValidation(),
+            updateNoteValidation,
             this.noteController.updateNote,
         );
 

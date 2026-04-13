@@ -15,9 +15,9 @@ export class AuthRoute extends BaseRoute {
         // Initialize the controller here, after the container is available
         this.authController = this.container.getAuthController();
 
-        this.router.post('/signup', authLimiter, signupValidation(), this.authController.signUp);
+        this.router.post('/signup', authLimiter, signupValidation, this.authController.signUp);
 
-        this.router.post('/signin', authLimiter, signinValidation(), this.authController.signIn);
+        this.router.post('/signin', authLimiter, signinValidation, this.authController.signIn);
 
         this.router.post('/refresh-token', authLimiter, this.authController.refreshAccessToken);
 

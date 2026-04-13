@@ -32,10 +32,6 @@ export class NoteController extends BaseController implements INoteController {
      */
     public createNote = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            if (!this.handleValidationErrors(req, next)) {
-                return;
-            }
-
             const userId = this.getUserId(req, next);
             if (!userId) {
                 return;
@@ -137,7 +133,8 @@ export class NoteController extends BaseController implements INoteController {
                 return;
             }
 
-            const noteId = req.params.id;
+            const rawNoteId = req.params.id;
+            const noteId = Array.isArray(rawNoteId) ? rawNoteId[0] : rawNoteId;
             if (!noteId) {
                 next(new AppError('Note ID is required', 400));
                 return;
@@ -157,16 +154,13 @@ export class NoteController extends BaseController implements INoteController {
      */
     public updateNote = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            if (!this.handleValidationErrors(req, next)) {
-                return;
-            }
-
             const userId = this.getUserId(req, next);
             if (!userId) {
                 return;
             }
 
-            const noteId = req.params.id;
+            const rawNoteId = req.params.id;
+            const noteId = Array.isArray(rawNoteId) ? rawNoteId[0] : rawNoteId;
             if (!noteId) {
                 next(new AppError('Note ID is required', 400));
                 return;
@@ -193,7 +187,8 @@ export class NoteController extends BaseController implements INoteController {
                 return;
             }
 
-            const noteId = req.params.id;
+            const rawNoteId = req.params.id;
+            const noteId = Array.isArray(rawNoteId) ? rawNoteId[0] : rawNoteId;
             if (!noteId) {
                 next(new AppError('Note ID is required', 400));
                 return;

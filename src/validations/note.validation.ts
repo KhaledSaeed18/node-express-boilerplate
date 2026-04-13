@@ -1,61 +1,32 @@
 /*
  * src/validations/note.validation.ts
- * Validation middleware for note routes.
- * This module exports validation functions for creating and updating notes using express-validator.
+ * Zod schemas and request-handler middleware for note routes.
  */
 
-import { body, type ValidationChain } from 'express-validator';
+import { z } from 'zod';
+import type { RequestHandler } from 'express';
+import { validateBody } from '../lib/validate';
 
-// Validation for creating a note
-// This validation checks that the title and content fields are provided and formatted correctly
-// It ensures that the title is a string, not empty, and within a specified length
-export const createNoteValidation = (): ValidationChain[] => {
-    return [
-        body('title')
-            .exists()
-            .withMessage('Title is required')
-            .isString()
-            .withMessage('Title must be a string')
-            .notEmpty()
-            .withMessage('Title cannot be empty')
-            .isLength({ min: 1, max: 255 })
-            .withMessage('Title must be between 1 and 255 characters')
-            .trim(),
-        body('content')
-            .exists()
-            .withMessage('Content is required')
-            .isString()
-            .withMessage('Content must be a string')
-            .notEmpty()
-            .withMessage('Content cannot be empty')
-            .isLength({ min: 1 })
-            .withMessage('Content must not be empty')
-            .trim(),
-    ];
-};
+export const createNoteSchema = z.object({
+    title: z
+        .string({ error: 'Title is required' })
+        .trim()
+        .min(1, 'Title cannot be empty')
+        .max(255, 'Title must be between 1 and 255 characters'),
+    content: z.string({ error: 'Content is required' }).trim().min(1, 'Content cannot be empty'),
+});
 
-// Validation for updating a note
-// This validation allows the title and content fields to be optional
-// It checks that if they are provided, they meet the same criteria as for creating a note
-export const updateNoteValidation = (): ValidationChain[] => {
-    return [
-        body('title')
-            .optional()
-            .isString()
-            .withMessage('Title must be a string')
-            .notEmpty()
-            .withMessage('Title cannot be empty')
-            .isLength({ min: 1, max: 255 })
-            .withMessage('Title must be between 1 and 255 characters')
-            .trim(),
-        body('content')
-            .optional()
-            .isString()
-            .withMessage('Content must be a string')
-            .notEmpty()
-            .withMessage('Content cannot be empty')
-            .isLength({ min: 1 })
-            .withMessage('Content must not be empty')
-            .trim(),
-    ];
-};
+export const updateNoteSchema = z
+    .object({
+        title: z.string().trim().min(1, 'Title cannot be empty').max(255).optional(),
+        content: z.string().trim().min(1, 'Content cannot be empty').optional(),
+    })
+    .refine((data) => data.title !== undefined || data.content !== undefined, {
+        message: 'At least one field (title or content) must be provided',
+    });
+
+export type CreateNoteInput = z.infer<typeof createNoteSchema>;
+export type UpdateNoteInput = z.infer<typeof updateNoteSchema>;
+
+export const createNoteValidation: RequestHandler = validateBody(createNoteSchema);
+export const updateNoteValidation: RequestHandler = validateBody(updateNoteSchema);

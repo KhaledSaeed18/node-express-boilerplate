@@ -12,6 +12,7 @@ import type { IUserRepository } from '../repository';
 import { generateAccessToken, generateRefreshToken, generateUniqueUsername } from '../utils';
 import type { SignUpDTO, SignInDTO, AuthResponseDTO, UserResponseDTO } from '../types';
 import { ConflictError, AuthenticationError, NotFoundError, ValidationError } from '../errors';
+import { config } from '../config/env';
 
 export interface IAuthService {
     signUp(data: SignUpDTO): Promise<AuthResponseDTO>;
@@ -47,10 +48,10 @@ export class AuthService implements IAuthService {
 
         // Generate unique username
         const emailPrefix = email.split('@')[0];
-        const username = await generateUniqueUsername(emailPrefix);
+        const username = await generateUniqueUsername(emailPrefix, this.userRepository);
 
         // Hash password
-        const hashedPassword = await bcrypt.hash(password, 12);
+        const hashedPassword = await bcrypt.hash(password, config.BCRYPT_SALT_ROUNDS);
 
         // Create user
         const user = await this.userRepository.create({

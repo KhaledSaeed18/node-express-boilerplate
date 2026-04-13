@@ -6,7 +6,8 @@
 
 import type { Request, Response, NextFunction } from 'express';
 import jwt, { type JwtPayload, TokenExpiredError } from 'jsonwebtoken';
-import { errorHandler } from '../utils';
+import { config } from '../config/env';
+import { createError } from '../utils';
 
 declare global {
     namespace Express {
@@ -32,20 +33,20 @@ export const protect = (req: Request, _res: Response, next: NextFunction): void 
     }
 
     if (!token) {
-        next(errorHandler(403, 'Access denied: No token provided'));
+        next(createError(403, 'Access denied: No token provided'));
         return;
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+        const decoded = jwt.verify(token, config.JWT_SECRET) as JwtPayload;
         req.user = decoded;
 
         next();
     } catch (error) {
         if (error instanceof TokenExpiredError) {
-            next(errorHandler(401, 'Unauthorized: Token has expired'));
+            next(createError(401, 'Unauthorized: Token has expired'));
             return;
         }
-        next(errorHandler(401, 'Unauthorized: Invalid token'));
+        next(createError(401, 'Unauthorized: Invalid token'));
     }
 };

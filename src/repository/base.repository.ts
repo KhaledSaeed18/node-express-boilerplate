@@ -10,7 +10,9 @@
 // Proper generic typing is tracked as a Phase 2 improvement.
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment */
 
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import type { PrismaClient } from '../generated/prisma/client';
+import { NotFoundError } from '../errors';
 import type { PaginationParams } from '../types';
 
 export abstract class BaseRepository {
@@ -47,5 +49,13 @@ export abstract class BaseRepository {
             skip: pagination?.skip,
             take: pagination?.take,
         });
+    }
+
+    // Converts Prisma P2025 (record not found) into a NotFoundError
+    protected handlePrismaError(error: unknown): never {
+        if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+            throw new NotFoundError('Record not found');
+        }
+        throw error;
     }
 }

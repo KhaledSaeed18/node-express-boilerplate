@@ -5,6 +5,8 @@
  */
 
 import type { Request, Response, NextFunction } from 'express';
+import { ZodError } from 'zod';
+import { config } from '../config/env';
 import { AppError, ValidationError } from '../errors';
 
 interface ValidationErrorDetail {
@@ -22,6 +24,14 @@ const errorMiddleware = (err: Error, _req: Request, res: Response, _next: NextFu
         statusCode = err.statusCode;
         message = err.message;
         errors = err.errors;
+    } else if (err instanceof ZodError) {
+        // Belt-and-suspenders: catch any ZodError that bypasses validateBody middleware
+        statusCode = 400;
+        message = 'Validation failed';
+        errors = err.issues.map((issue) => ({
+            field: issue.path.join('.') || 'unknown',
+            message: issue.message,
+        }));
     } else if (err instanceof AppError) {
         statusCode = err.statusCode;
         message = err.message;
@@ -42,7 +52,7 @@ const errorMiddleware = (err: Error, _req: Request, res: Response, _next: NextFu
         message = 'Token expired';
     }
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (config.NODE_ENV !== 'production') {
         // eslint-disable-next-line no-console
         console.error('Error:', err);
     }
@@ -53,7 +63,7 @@ const errorMiddleware = (err: Error, _req: Request, res: Response, _next: NextFu
         statusCode,
         message,
         ...(errors && { errors }),
-        ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
+        ...(config.NODE_ENV !== 'production' && { stack: err.stack }),
     };
 
     res.status(statusCode).json(response);

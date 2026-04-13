@@ -4,8 +4,8 @@
  * This middleware limits the number of requests to specific routes to prevent abuse.
  */
 
-import rateLimit, { type RateLimitRequestHandler } from 'express-rate-limit';
-import type { Request } from 'express';
+import rateLimit from 'express-rate-limit';
+import type { Request, RequestHandler } from 'express';
 
 // Function to create a rate limiter
 // Accepts parameters for the time window, maximum requests, and error message
@@ -14,7 +14,7 @@ export const createRateLimiter = (
     windowMs: number,
     limit: number,
     message: string,
-): RateLimitRequestHandler => {
+): RequestHandler => {
     return rateLimit({
         windowMs,
         limit,
@@ -28,7 +28,7 @@ export const createRateLimiter = (
         keyGenerator: (req: Request) => {
             return req.ip ?? req.socket.remoteAddress ?? 'unknown';
         },
-    });
+    }) as unknown as RequestHandler;
 };
 
 // Rate limiters for specific routes
