@@ -1,0 +1,50 @@
+# Dependencies (re-installed during Docker build)
+node_modules/
+
+# Build output (re-compiled during Docker build)
+dist/
+build/
+
+# Generated Prisma client (re-generated during Docker build)
+src/generated/
+
+# Git
+.git/
+.gitignore
+
+# Environment files — never bake secrets into images
+.env
+.env.*
+!.env.example
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# CI
+.github/
+
+# Docker files themselves
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Docs
+README.md
+CONTRIBUTING.md
+SECURITY.md
+CODE_OF_CONDUCT.md
+LICENSE
+
+# Temp
+.temp/
+.tmp/
