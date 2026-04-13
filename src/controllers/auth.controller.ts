@@ -53,9 +53,14 @@ export class AuthController extends BaseController implements IAuthController {
 
             const result = await this.authService.signIn({ email, password });
 
+            if (!result.accessToken || !result.refreshToken) {
+                next(new AppError('Token generation failed', 500));
+                return;
+            }
+
             // Set cookies
-            this.setCookie(res, 'accessToken', result.accessToken!, 15 * 60 * 1000); // 15 minutes
-            this.setCookie(res, 'refreshToken', result.refreshToken!, 5 * 60 * 60 * 1000); // 5 hours
+            this.setCookie(res, 'accessToken', result.accessToken, 15 * 60 * 1000); // 15 minutes
+            this.setCookie(res, 'refreshToken', result.refreshToken, 5 * 60 * 60 * 1000); // 5 hours
 
             this.sendResponse(res, 200, 'Sign in successful', result.user);
         } catch (error) {
