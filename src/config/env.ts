@@ -35,6 +35,9 @@ export type Config = z.infer<typeof envSchema>;
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
+    // console.error is intentional here: the Pino logger (src/config/logger.ts)
+    // depends on this module, so it cannot be initialised yet.
+    // These two lines run once at startup; if they fire the process exits immediately.
     // eslint-disable-next-line no-console
     console.error('Invalid environment configuration:');
     // eslint-disable-next-line no-console

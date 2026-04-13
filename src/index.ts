@@ -6,8 +6,8 @@
 
 import app from './app';
 import { config } from './config/env';
+import logger from './config/logger';
 
 app.listen(config.PORT, () => {
-    // eslint-disable-next-line no-console
-    console.log(`Server is running on port ${String(config.PORT)}`);
+    logger.info({ port: config.PORT }, `Server is running on port ${String(config.PORT)}`);
 });

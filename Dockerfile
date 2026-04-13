@@ -23,7 +23,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # No real DB needed at build time — generate only reads the schema file
-RUN DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/template-db" \
+RUN DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/node-express-boilerplate-db" \
     pnpm prisma:generate
 
 RUN pnpm build

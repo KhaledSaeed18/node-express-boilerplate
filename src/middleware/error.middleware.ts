@@ -15,7 +15,7 @@ interface ValidationErrorDetail {
     value?: unknown;
 }
 
-const errorMiddleware = (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
+const errorMiddleware = (err: Error, req: Request, res: Response, _next: NextFunction): void => {
     let statusCode = 500;
     let message = 'Internal Server Error';
     let errors: ValidationErrorDetail[] | undefined = undefined;
@@ -52,9 +52,13 @@ const errorMiddleware = (err: Error, _req: Request, res: Response, _next: NextFu
         message = 'Token expired';
     }
 
-    if (config.NODE_ENV !== 'production') {
-        // eslint-disable-next-line no-console
-        console.error('Error:', err);
+    // req.log is a pino-http child logger pre-bound with the request's correlationId.
+    // 5xx errors are genuine server faults; 4xx are operational/expected and logged
+    // at warn level to avoid alert fatigue.
+    if (statusCode >= 500) {
+        req.log.error({ err, statusCode }, message);
+    } else if (config.NODE_ENV !== 'production') {
+        req.log.warn({ err: { name: err.name, message: err.message }, statusCode }, message);
     }
 
     // Construct the response object

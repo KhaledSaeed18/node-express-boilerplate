@@ -3,18 +3,18 @@ version: "3.9"
 services:
   db:
     image: postgres:16-alpine
-    container_name: template_db
+    container_name: node-express-boilerplate_db
     restart: unless-stopped
     ports:
       - "5433:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: template-db
+      POSTGRES_DB: node-express-boilerplate-db
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d template-db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d node-express-boilerplate-db"]
       interval: 10s
       timeout: 5s
       retries: 5

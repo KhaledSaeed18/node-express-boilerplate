@@ -9,9 +9,8 @@ import { config } from './config/env';
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import { errorMiddleware } from './middleware';
+import { errorMiddleware, correlationMiddleware, httpLogger } from './middleware';
 import { authRoutes, noteRoutes } from './routes';
 
 const app = express();
@@ -23,11 +22,12 @@ const corsOptions = {
 };
 
 // Middleware setup - including security, parsing and logging
+app.use(correlationMiddleware);
+app.use(httpLogger);
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use(morgan('dev'));
 
 const baseUrl = `${config.BASE_URL}/${config.API_VERSION}`;
 

@@ -1,10 +1,9 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import { type Prisma, PrismaClient } from '../generated/prisma/client';
 import { config } from '../config/env';
+import logger from '../config/logger';
 
 const adapter = new PrismaPg({ connectionString: config.DATABASE_URL });
-
-const logger = console;
 
 const prisma = new PrismaClient({
     adapter: adapter,
@@ -21,18 +20,18 @@ type LogEvent = Prisma.LogEvent;
 if (config.NODE_ENV === 'development') {
     prisma.$on('query', (event: QueryEvent) => {
         logger.debug(
-            `[Prisma Query] [${event.timestamp.toISOString()}] ${event.duration.toString()}ms ${event.query}`,
+            { duration: event.duration, params: event.params, timestamp: event.timestamp },
+            event.query,
         );
-        logger.debug(`[Prisma Query Params] ${event.params}`);
     });
 }
 
 prisma.$on('error', (event: LogEvent) => {
-    logger.error(`[Prisma Error] [${event.timestamp.toISOString()}] ${event.message}`);
+    logger.error({ timestamp: event.timestamp }, event.message);
 });
 
 prisma.$on('warn', (event: LogEvent) => {
-    logger.warn(`[Prisma Warning] [${event.timestamp.toISOString()}] ${event.message}`);
+    logger.warn({ timestamp: event.timestamp }, event.message);
 });
 
 export { prisma };
