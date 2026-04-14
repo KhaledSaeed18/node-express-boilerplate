@@ -69,6 +69,3 @@ jobs:
           fail-on-severity: high
           # Post a comment on the PR with a summary of flagged packages.
           comment-summary-in-pr: always
-          # Warn on packages with copyleft licences that may be incompatible with MIT.
-          # Adjust the list to match your project's licence policy.
-          deny-licenses: GPL-2.0, GPL-3.0, AGPL-3.0
