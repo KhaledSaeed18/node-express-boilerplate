@@ -1,0 +1,62 @@
+version: 2
+
+updates:
+  # npm / pnpm dependencies
+  # Strategy: one PR per week containing ALL minor+patch bumps, grouped together.
+  # This means pnpm-lock.yaml is only touched by one branch at a time, which
+  # eliminates merge conflicts and lock file corruption entirely.
+  # Major bumps are ignored here — handle them manually with `pnpm outdated`
+  # or `pnpm dlx npm-check-updates` so breaking changes get intentional review.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    # One PR for all minor+patch grouped together = at most 1 open PR at any time.
+    target-branch: "dev"
+    open-pull-requests-limit: 1
+    # Dependabot will rebase its PR automatically whenever dev moves forward,
+    # keeping the branch mergeable without manual intervention.
+    rebase-strategy: "auto"
+    # Ignore all major version bumps. Handle them manually and deliberately.
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    groups:
+      # All minor and patch bumps in one commit, one PR, one CI run.
+      all-non-breaking:
+        update-types:
+          - "minor"
+          - "patch"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  # GitHub Actions
+  # These only touch workflow YAML files, not pnpm-lock.yaml, so they never
+  # conflict with npm PRs. Group them separately for a clean one-PR-per-week cadence.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    target-branch: "dev"
+    open-pull-requests-limit: 1
+    rebase-strategy: "auto"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"

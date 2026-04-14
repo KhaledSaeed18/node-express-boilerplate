@@ -1,0 +1,71 @@
+name: Security
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  # Secret scanning
+  # TruffleHog scans the git diff for verified secrets (real credentials that
+  # respond to an auth check). "--only-verified" keeps false-positive noise low.
+  # Runs on both push and pull_request so secrets are caught before they merge.
+  secret-scan:
+    name: Secret scanning
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          # Full history is needed so TruffleHog can diff against the base commit.
+          fetch-depth: 0
+
+      - name: TruffleHog — scan for verified secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          # On a PR, scan only the commits introduced by the branch.
+          # On a push, scan only the commits in the push range.
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.event.after }}
+          extra_args: --only-verified
+
+  # Dependency review
+  # Compares the dependency graph before and after a PR and surfaces packages
+  # with known vulnerabilities (pulled from the GitHub Advisory Database).
+  # This is complementary to `pnpm audit`: audit checks what's already installed;
+  # dependency-review blocks new vulnerable packages from being merged.
+  # Only meaningful on pull_request events.
+  dependency-review:
+    name: Dependency review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write # Allows posting an inline comment summarising findings
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          # Fail if any newly introduced dependency has a high or critical CVSS score.
+          fail-on-severity: high
+          # Post a comment on the PR with a summary of flagged packages.
+          comment-summary-in-pr: always
