@@ -42,6 +42,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Fail CI on high or critical severity vulnerabilities in any dependency.
+      - name: Audit dependencies
+        run: pnpm audit --audit-level=high
+
       # Generates src/generated/prisma from prisma/schema.prisma.
       # Must run before type-check so @prisma/client types are available.
       - name: Generate Prisma client
