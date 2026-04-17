@@ -28,6 +28,8 @@ const envSchema = z.object({
     CLIENT_URL: z.url('CLIENT_URL must be a valid URL'),
 
     BCRYPT_SALT_ROUNDS: z.coerce.number().min(10).max(15).default(12),
+
+    COOKIE_SECRET: z.string().min(32, 'COOKIE_SECRET must be at least 32 characters'),
 });
 
 export type Config = z.infer<typeof envSchema>;

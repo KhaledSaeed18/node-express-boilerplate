@@ -78,15 +78,10 @@ export class AuthController extends BaseController implements IAuthController {
         next: NextFunction,
     ): Promise<void> => {
         try {
-            const { refreshToken } = req.cookies as { refreshToken?: string };
+            const refreshToken = req.signedCookies.refreshToken as string | false | undefined;
 
             if (!refreshToken) {
                 next(new AppError('Refresh token is required', 401));
-                return;
-            }
-
-            if (typeof refreshToken !== 'string') {
-                next(new AppError('Invalid refresh token', 400));
                 return;
             }
 

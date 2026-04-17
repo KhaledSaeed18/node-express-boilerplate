@@ -5,6 +5,7 @@
  */
 
 import type { Request, Response, NextFunction } from 'express';
+import { isHttpError } from 'http-errors';
 import { ZodError } from 'zod';
 import { config } from '../config/env';
 import { AppError, ValidationError } from '../errors';
@@ -35,6 +36,9 @@ const errorMiddleware = (err: Error, req: Request, res: Response, _next: NextFun
     } else if (err instanceof AppError) {
         statusCode = err.statusCode;
         message = err.message;
+    } else if (isHttpError(err)) {
+        statusCode = err.status;
+        message = err.expose ? err.message : 'An error occurred';
     } else if (err.name === 'ValidationError') {
         statusCode = 400;
         message = err.message;

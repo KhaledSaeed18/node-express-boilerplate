@@ -10,7 +10,12 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { errorMiddleware, correlationMiddleware, httpLogger } from './middleware';
+import {
+    errorMiddleware,
+    correlationMiddleware,
+    httpLogger,
+    doubleCsrfProtection,
+} from './middleware';
 import { authRoutes, noteRoutes } from './routes';
 
 const app = express();
@@ -27,7 +32,8 @@ app.use(httpLogger);
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(cookieParser());
+app.use(cookieParser(config.COOKIE_SECRET));
+app.use(doubleCsrfProtection);
 
 const baseUrl = `${config.BASE_URL}/${config.API_VERSION}`;
 

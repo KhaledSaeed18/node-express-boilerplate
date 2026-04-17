@@ -1,0 +1,10 @@
+name: "CodeQL Security Configuration"
+
+# Suppress js/missing-token-validation false positives.
+# CSRF protection is implemented via the `csrf-csrf` package (Double Submit Cookie pattern)
+# using `doubleCsrfProtection` applied globally in app.ts before all routes.
+# CodeQL does not recognise `csrf-csrf` as a known CSRF middleware, causing false positives
+# on every cookie-authenticated route handler. The protection is real and intentional.
+query-filters:
+  - exclude:
+      id: js/missing-token-validation

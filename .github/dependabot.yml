@@ -50,6 +50,12 @@ updates:
     target-branch: "dev"
     open-pull-requests-limit: 1
     rebase-strategy: "auto"
+    # Ignore major version bumps — actions major versions often have breaking
+    # changes that require manual testing and workflow updates.
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     groups:
       github-actions:
         patterns:
