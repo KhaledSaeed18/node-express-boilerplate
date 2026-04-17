@@ -22,7 +22,7 @@ declare global {
 // If the token is valid, it decodes the user information and attaches it to the request object
 // If the token is missing or invalid, it returns an error response
 export const protect = (req: Request, _res: Response, next: NextFunction): void => {
-    const cookieToken = req.cookies.accessToken as string | undefined;
+    const cookieToken = req.signedCookies.accessToken as string | false | undefined;
     const authHeader = req.headers.authorization;
 
     let token: string | undefined;

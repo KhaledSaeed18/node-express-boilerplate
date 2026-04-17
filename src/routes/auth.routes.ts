@@ -3,9 +3,10 @@
  * This file defines the authentication routes for user signup, signin, token refresh, and logout.
  */
 
+import type { Request, Response } from 'express';
 import type { IAuthController } from '../controllers';
 import { signupValidation, signinValidation } from '../validations';
-import { authLimiter } from '../middleware';
+import { authLimiter, generateCsrfToken } from '../middleware';
 import { BaseRoute } from './base.route';
 
 export class AuthRoute extends BaseRoute {
@@ -14,6 +15,11 @@ export class AuthRoute extends BaseRoute {
     protected initializeRoutes(): void {
         // Initialize the controller here, after the container is available
         this.authController = this.container.getAuthController();
+
+        this.router.get('/csrf-token', (req: Request, res: Response) => {
+            const token = generateCsrfToken(req, res);
+            res.json({ csrfToken: token });
+        });
 
         this.router.post('/signup', authLimiter, signupValidation, this.authController.signUp);
 

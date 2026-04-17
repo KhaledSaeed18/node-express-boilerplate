@@ -78,6 +78,7 @@ export abstract class BaseController {
             httpOnly: true,
             secure: config.NODE_ENV === 'production',
             sameSite: 'strict',
+            signed: true,
             maxAge,
         });
     }
