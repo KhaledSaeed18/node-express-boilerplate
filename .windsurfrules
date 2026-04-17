@@ -1,0 +1,70 @@
+# Windsurf Rules
+
+## Stack
+Node.js 22+ · Express · TypeScript (strict) · Prisma + PostgreSQL · Zod v4 · Pino · JWT (HttpOnly cookies) · pnpm
+
+## Architecture Pattern
+Routes → Controllers → Services → Repositories → Prisma
+
+Every layer has a corresponding interface (`IFooService`, `IFooRepository`, etc.). The DI Container (`src/container/index.ts`) is the single place that `new`s concrete classes. Routes get instances via `this.container.get<Name>Controller()`.
+
+## Absolute Rules
+
+- **No `process.env`** — always use the typed config from `src/config/env.ts`
+- **No `console.*`** — use Pino logger from `src/config/logger.ts`
+- **No `any`** — strict TypeScript, use `import type` for all type-only imports
+- **No error responses via `res.json()`** — throw from `src/errors/index.ts`, the global middleware handles it
+- **No floating promises** — always `await` or `.catch()`
+- **No npm/yarn** — pnpm only
+
+## New Resource Checklist
+
+For a resource named `<name>`:
+- [ ] `src/validations/<name>.validation.ts` — Zod schema + `validateBody()` middleware
+- [ ] `src/repository/<name>.repository.ts` — interface + class extending `BaseRepository`
+- [ ] `src/services/<name>.service.ts` — interface + class
+- [ ] `src/controllers/<name>.controller.ts` — interface + class extending `BaseController`
+- [ ] `src/routes/<name>.route.ts` — class extending `BaseRoute`
+- [ ] Register in `src/container/index.ts`
+- [ ] Mount in `src/app.ts` at `/api/v1/<name>`
+- [ ] Export from barrel index files
+
+## Patterns
+
+**Controller methods** are arrow function properties (ensures `this` binding when used as route handlers):
+```ts
+public doThing = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const result = await this.service.doThing();
+        this.sendResponse(res, 200, 'Success', result);
+    } catch (error) {
+        this.handleError(error, next);
+    }
+};
+```
+
+**Validation** with Zod v4:
+```ts
+import { z } from 'zod';
+import { validateBody } from '../lib/validate';
+
+export const createSchema = z.object({
+    field: z.string().trim().min(1).max(255),
+});
+export const createValidation: RequestHandler = validateBody(createSchema);
+```
+
+**Repository** update/delete — wrap in try/catch and call `this.handlePrismaError(error)`.
+
+**Errors**: throw `NotFoundError`, `ConflictError`, `AuthenticationError`, `AuthorizationError`, `ValidationError`, or base `AppError(message, statusCode)`.
+
+## Formatting
+4 spaces · single quotes · semicolons · trailing commas · 100-char line width (Prettier enforced)
+
+## Commands
+```bash
+pnpm dev                   # hot-reload dev server
+pnpm full-check            # format + lint + type-check (run before committing)
+pnpm prisma:migrate        # create + apply migration
+pnpm prisma:generate       # regenerate client after schema changes
+```
