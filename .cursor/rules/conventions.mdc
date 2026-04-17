@@ -1,0 +1,76 @@
+---
+description: Coding conventions, patterns, and hard rules for every file in this repo
+globs: ["src/**/*.ts"]
+alwaysApply: true
+---
+
+# Hard Rules
+
+**Environment variables:** Never use `process.env` directly anywhere. Import the typed config object from `src/config/env.ts`.
+
+**Error handling:** Throw from `src/errors/index.ts`. In controllers, always catch and call `this.handleError(error, next)` — never `res.status().json()` on error paths. Available classes: `AppError`, `ValidationError`, `AuthenticationError`, `AuthorizationError`, `NotFoundError`, `ConflictError`, `InternalServerError`.
+
+**Logging:** Use the Pino logger from `src/config/logger.ts`. Never use `console.log/warn/error`.
+
+**Validation:** Zod v4 schemas in `src/validations/`. Use `validateBody(schema)` from `src/lib/validate.ts` to produce middleware. Export both the schema type and the `RequestHandler` from the validation file.
+
+**Package manager:** pnpm only. Never generate `package-lock.json` or `yarn.lock`.
+
+# TypeScript
+
+- Strict mode — no `any`, no `@ts-ignore`
+- All type-only imports must use `import type`
+- Explicit return types on all public methods and class properties
+- No floating promises — always `await` or `.catch()`
+- Prefer `??` over `||` for nullish checks
+
+# Formatting (Prettier)
+
+4-space indent · single quotes · semicolons · trailing commas · 100-char line limit
+
+# Controller Pattern
+
+Controller methods are arrow function *properties* (not regular methods) so `this` is bound correctly when passed as route handlers:
+
+```ts
+public createFoo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        // ...
+        this.sendResponse(res, 201, 'Foo created', data);
+    } catch (error) {
+        this.handleError(error, next);
+    }
+};
+```
+
+# Repository Pattern
+
+- Extend `BaseRepository`
+- Use `this.prisma.<model>` for all queries
+- In `update`/`delete`, wrap Prisma calls in try/catch and call `this.handlePrismaError(error)`
+- Use `this.findManyWithPagination()` and `this.count()` from the base class for list/count operations
+
+# Route Pattern
+
+```ts
+export class FooRoute extends BaseRoute {
+    private fooController!: IFooController;
+
+    protected initializeRoutes(): void {
+        this.fooController = this.container.getFooController();
+        this.router.post('/', fooLimiter, protect, createFooValidation, this.fooController.createFoo);
+        // ...
+    }
+}
+
+const fooRoute = new FooRoute();
+const fooRoutes = fooRoute.getRouter();
+export default fooRoutes;
+```
+
+# Authentication & Security
+
+- Protected routes: apply `protect` middleware (JWT from HttpOnly cookie)
+- All mutating routes require a CSRF token (double-submit cookie pattern via `doubleCsrfProtection`)
+- Rate-limit every route group with its own limiter from `src/middleware/limiter.middleware.ts`
+- Passwords hashed with bcrypt; never log or return password fields
