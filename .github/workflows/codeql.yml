@@ -45,6 +45,7 @@ jobs:
           languages: ${{ matrix.language }}
           # Use the extended security-and-quality query suite for broader coverage.
           queries: security-and-quality
+          config-file: ./.github/codeql/codeql-config.yml
 
       # CodeQL's autobuild covers TypeScript/JavaScript without manual steps.
       - name: Autobuild
