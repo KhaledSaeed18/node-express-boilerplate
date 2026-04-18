@@ -4,7 +4,7 @@
  * This middleware limits the number of requests to specific routes to prevent abuse.
  */
 
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import type { Request, RequestHandler } from 'express';
 
 // Function to create a rate limiter
@@ -25,9 +25,8 @@ export const createRateLimiter = (
         },
         standardHeaders: true,
         legacyHeaders: false,
-        keyGenerator: (req: Request) => {
-            return req.ip ?? req.socket.remoteAddress ?? 'unknown';
-        },
+        keyGenerator: (req: Request) =>
+            ipKeyGenerator(req.ip ?? req.socket.remoteAddress ?? 'unknown'),
     }) as unknown as RequestHandler;
 };
 

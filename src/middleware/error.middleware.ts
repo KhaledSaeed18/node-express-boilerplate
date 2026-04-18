@@ -56,13 +56,13 @@ const errorMiddleware = (err: Error, req: Request, res: Response, _next: NextFun
         message = 'Token expired';
     }
 
-    // req.log is a pino-http child logger pre-bound with the request's correlationId.
-    // 5xx errors are genuine server faults; 4xx are operational/expected and logged
-    // at warn level to avoid alert fatigue.
+    // pino-http types req.log as always-defined, but it is absent when an error
+    // is thrown before pino-http processes the request (e.g. the docs route).
+    const log = req.log as typeof req.log | undefined;
     if (statusCode >= 500) {
-        req.log.error({ err, statusCode }, message);
+        log?.error({ err, statusCode }, message);
     } else if (config.NODE_ENV !== 'production') {
-        req.log.warn({ err: { name: err.name, message: err.message }, statusCode }, message);
+        log?.warn({ err: { name: err.name, message: err.message }, statusCode }, message);
     }
 
     // Construct the response object

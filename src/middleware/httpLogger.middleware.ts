@@ -49,7 +49,7 @@ export const httpLogger = pinoHttp({
             method: rawReq.method,
             url: rawReq.url,
             userAgent: rawReq.headers['user-agent'],
-            remoteAddress: rawReq.socket.remoteAddress,
+            remoteAddress: (rawReq.socket as typeof rawReq.socket | null)?.remoteAddress,
         }),
         res: (rawRes: ServerResponse) => ({
             statusCode: rawRes.statusCode,
