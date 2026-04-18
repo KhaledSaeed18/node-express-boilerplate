@@ -36,7 +36,7 @@ const config = {
 
         // ── Length limits ──────────────────────────────────────────────────────────
         'header-max-length': [2, 'always', 100],
-        'body-max-line-length': [2, 'always', 100],
+        'body-max-line-length': [2, 'always', 300],
         'footer-max-line-length': [2, 'always', 100],
 
         // ── Body / footer formatting ────────────────────────────────────────────────
