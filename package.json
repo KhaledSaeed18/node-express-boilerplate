@@ -79,7 +79,7 @@
         "@types/jsonwebtoken": "^9.0.10",
         "@types/node": "^25.6.0",
         "@types/swagger-ui-express": "^4.1.8",
-        "eslint": "^10.2.0",
+        "eslint": "^10.2.1",
         "eslint-config-prettier": "^10.1.8",
         "husky": "^9.1.7",
         "lint-staged": "^16.4.0",
