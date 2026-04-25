@@ -16,46 +16,52 @@ import {
     httpLogger,
     doubleCsrfProtection,
 } from './middleware';
-import { authRoutes, noteRoutes } from './routes';
+import { authRoutes, noteRoutes, healthRouter } from './routes';
 import docsRouter from './docs/setup';
+import { NotFoundError } from './errors';
 
 const app = express();
+
+// Trust the first proxy hop so req.ip reflects the real client IP behind
+// Nginx, ELB, Cloudflare, etc. Required for correct rate-limit key generation and CSRF session binding.
+app.set('trust proxy', 1);
 
 const corsOptions = {
     origin: [config.CLIENT_URL],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
 };
 
-// Middleware setup - including security, parsing and logging
-app.use(correlationMiddleware);
-app.use(httpLogger);
-
-// Helmet with relaxed CSP for the API docs UI (inline scripts/styles required
-// by swagger-ui-express); all other routes keep the strict default policy.
-app.use((req, res, next) => {
-    if (req.path.startsWith('/api-docs')) {
-        helmet({
-            contentSecurityPolicy: {
-                directives: {
-                    defaultSrc: ["'self'"],
-                    scriptSrc: ["'self'", "'unsafe-inline'"],
-                    styleSrc: ["'self'", "'unsafe-inline'"],
-                    imgSrc: ["'self'", 'data:'],
-                },
-            },
-        })(req, res, next);
-    } else {
-        helmet()(req, res, next);
-    }
+// Two module-level helmet instances avoid creating a new instance on every request.
+// The docs variant relaxes CSP so swagger-ui-express inline scripts/styles work.
+const helmetDefault = helmet();
+const helmetDocs = helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", 'data:'],
+        },
+    },
 });
 
+// Middleware setup — security, parsing, logging
+app.use(correlationMiddleware);
+app.use(httpLogger);
+app.use((req, res, next) => {
+    if (req.path.startsWith('/api-docs')) {
+        helmetDocs(req, res, next);
+    } else {
+        helmetDefault(req, res, next);
+    }
+});
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser(config.COOKIE_SECRET));
 
 // API docs — mounted before CSRF so UI GET requests are not challenged.
-// The UI itself does not mutate state; only "Try it out" calls reach the API and must still supply a valid x-csrf-token header.
 app.use('/api-docs', docsRouter);
 
 app.use(doubleCsrfProtection);
@@ -65,14 +71,11 @@ const baseUrl = `${config.BASE_URL}/${config.API_VERSION}`;
 // Define routes
 app.use(`${baseUrl}/auth`, authRoutes);
 app.use(`${baseUrl}/note`, noteRoutes);
+app.use(`${baseUrl}/health`, healthRouter);
 
-// Wildcard route for handling 404 errors
-app.all(/.*/, (req, res) => {
-    res.status(404).json({
-        statusCode: 404,
-        error: 'Not Found',
-        message: `Cannot ${req.method} ${req.originalUrl}`,
-    });
+// Catch-all for unmatched routes
+app.all(/.*/, (req, _res, next) => {
+    next(new NotFoundError(`Cannot ${req.method} ${req.originalUrl}`));
 });
 
 // Error handling middleware

@@ -10,6 +10,7 @@ import jwt, { TokenExpiredError } from 'jsonwebtoken';
 import { AppError } from '../errors';
 import { config } from '../config/env';
 import type { IAuthService } from '../services';
+import { parseExpireTimeMs } from '../utils';
 import { BaseController } from './base.controller';
 
 export interface IAuthController {
@@ -46,6 +47,7 @@ export class AuthController extends BaseController implements IAuthController {
     /**
      * Handles user sign-in.
      * Validates the request, calls the authService to authenticate the user, and sets cookies for access and refresh tokens.
+     * Cookie maxAge is derived from the JWT expiry config so they stay in sync.
      */
     public signIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -53,14 +55,18 @@ export class AuthController extends BaseController implements IAuthController {
 
             const result = await this.authService.signIn({ email, password });
 
-            if (!result.accessToken || !result.refreshToken) {
-                next(new AppError('Token generation failed', 500));
-                return;
-            }
-
-            // Set cookies
-            this.setCookie(res, 'accessToken', result.accessToken, 15 * 60 * 1000); // 15 minutes
-            this.setCookie(res, 'refreshToken', result.refreshToken, 5 * 60 * 60 * 1000); // 5 hours
+            this.setCookie(
+                res,
+                'accessToken',
+                result.accessToken,
+                parseExpireTimeMs(config.JWT_EXPIRE_TIME),
+            );
+            this.setCookie(
+                res,
+                'refreshToken',
+                result.refreshToken,
+                parseExpireTimeMs(config.JWT_REFRESH_EXPIRE_TIME),
+            );
 
             this.sendResponse(res, 200, 'Sign in successful', result.user);
         } catch (error) {
@@ -92,7 +98,12 @@ export class AuthController extends BaseController implements IAuthController {
 
             const result = await this.authService.refreshToken(userId);
 
-            this.setCookie(res, 'accessToken', result.accessToken, 15 * 60 * 1000); // 15 minutes
+            this.setCookie(
+                res,
+                'accessToken',
+                result.accessToken,
+                parseExpireTimeMs(config.JWT_EXPIRE_TIME),
+            );
 
             this.sendResponse(res, 200, 'Token refreshed successfully', {
                 accessToken: result.accessToken,

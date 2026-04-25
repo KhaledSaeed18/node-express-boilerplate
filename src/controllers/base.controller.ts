@@ -62,7 +62,7 @@ export abstract class BaseController {
      * If the user ID is not found, it passes an error to the next middleware.
      */
     protected getUserId(req: Request, next: NextFunction): string | null {
-        const { userId } = (req.user as { userId?: string } | undefined) ?? {};
+        const userId = req.user?.userId;
         if (!userId) {
             next(new AppError('Unauthorized', 401));
             return null;

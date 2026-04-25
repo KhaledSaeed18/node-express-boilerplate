@@ -5,14 +5,15 @@
  */
 
 import type { Request, Response, NextFunction } from 'express';
-import jwt, { type JwtPayload, TokenExpiredError } from 'jsonwebtoken';
+import jwt, { TokenExpiredError } from 'jsonwebtoken';
 import { config } from '../config/env';
-import { createError } from '../utils';
+import { AuthenticationError } from '../errors';
+import type { AuthPayload } from '../types';
 
 declare global {
     namespace Express {
         interface Request {
-            user?: JwtPayload;
+            user?: AuthPayload;
         }
     }
 }
@@ -20,7 +21,7 @@ declare global {
 // Middleware to protect routes
 // Checks for a JWT token in the request cookies or Authorization header
 // If the token is valid, it decodes the user information and attaches it to the request object
-// If the token is missing or invalid, it returns an error response
+// If the token is missing or invalid, it returns a 401 AuthenticationError
 export const protect = (req: Request, _res: Response, next: NextFunction): void => {
     const cookieToken = req.signedCookies.accessToken as string | false | undefined;
     const authHeader = req.headers.authorization;
@@ -33,20 +34,19 @@ export const protect = (req: Request, _res: Response, next: NextFunction): void 
     }
 
     if (!token) {
-        next(createError(403, 'Access denied: No token provided'));
+        next(new AuthenticationError('No token provided'));
         return;
     }
 
     try {
-        const decoded = jwt.verify(token, config.JWT_SECRET) as JwtPayload;
+        const decoded = jwt.verify(token, config.JWT_SECRET) as AuthPayload;
         req.user = decoded;
-
         next();
     } catch (error) {
         if (error instanceof TokenExpiredError) {
-            next(createError(401, 'Unauthorized: Token has expired'));
+            next(new AuthenticationError('Token has expired'));
             return;
         }
-        next(createError(401, 'Unauthorized: Invalid token'));
+        next(new AuthenticationError('Invalid token'));
     }
 };

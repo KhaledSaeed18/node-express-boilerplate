@@ -8,13 +8,18 @@ import type { Request, Response, NextFunction } from 'express';
 import { isHttpError } from 'http-errors';
 import { ZodError } from 'zod';
 import { config } from '../config/env';
-import { AppError, ValidationError } from '../errors';
+import { AppError, ValidationError, ConflictError, NotFoundError } from '../errors';
 
 interface ValidationErrorDetail {
     field: string;
     message: string;
     value?: unknown;
 }
+
+// Type guard for Prisma known request errors — avoids importing from internal paths
+// that may break on version bumps.
+const isPrismaKnownRequestError = (err: Error): err is Error & { code: string } =>
+    err.name === 'PrismaClientKnownRequestError' && 'code' in err;
 
 const errorMiddleware = (err: Error, req: Request, res: Response, _next: NextFunction): void => {
     let statusCode = 500;
@@ -33,27 +38,32 @@ const errorMiddleware = (err: Error, req: Request, res: Response, _next: NextFun
             field: issue.path.join('.') || 'unknown',
             message: issue.message,
         }));
+    } else if (isPrismaKnownRequestError(err)) {
+        switch (err.code) {
+            case 'P2002':
+                statusCode = new ConflictError('A record with this value already exists')
+                    .statusCode;
+                message = 'A record with this value already exists';
+                break;
+            case 'P2025':
+                statusCode = new NotFoundError('Record not found').statusCode;
+                message = 'Record not found';
+                break;
+            case 'P2003':
+                statusCode = new ConflictError('Operation violates a foreign key constraint')
+                    .statusCode;
+                message = 'Operation violates a foreign key constraint';
+                break;
+            default:
+                statusCode = 400;
+                message = 'Database operation failed';
+        }
     } else if (err instanceof AppError) {
         statusCode = err.statusCode;
         message = err.message;
     } else if (isHttpError(err)) {
         statusCode = err.status;
         message = err.expose ? err.message : 'An error occurred';
-    } else if (err.name === 'ValidationError') {
-        statusCode = 400;
-        message = err.message;
-    } else if (err.name === 'CastError') {
-        statusCode = 400;
-        message = 'Invalid ID format';
-    } else if (err.name === 'MongoError' || err.name === 'PrismaClientKnownRequestError') {
-        statusCode = 400;
-        message = 'Database operation failed';
-    } else if (err.name === 'JsonWebTokenError') {
-        statusCode = 401;
-        message = 'Invalid token';
-    } else if (err.name === 'TokenExpiredError') {
-        statusCode = 401;
-        message = 'Token expired';
     }
 
     // pino-http types req.log as always-defined, but it is absent when an error

@@ -2,13 +2,17 @@
  * NoteRoute class for defining routes related to notes.
  * This class extends BaseRoute and initializes routes for creating, retrieving,
  * updating, and deleting notes.
- * It uses middleware for rate limiting, pagination, and authentication.
- * It is used to set up note-related routes in the application.
+ * It uses middleware for rate limiting, pagination, authentication, and validation.
  */
 
 import type { INoteController } from '../controllers';
 import { noteLimiter, paginateResults, protect } from '../middleware';
-import { createNoteValidation, updateNoteValidation } from '../validations';
+import {
+    createNoteValidation,
+    updateNoteValidation,
+    paginationQueryValidation,
+    noteIdParamValidation,
+} from '../validations';
 import { BaseRoute } from './base.route';
 
 export class NoteRoute extends BaseRoute {
@@ -26,27 +30,48 @@ export class NoteRoute extends BaseRoute {
             this.noteController.createNote,
         );
 
-        this.router.get('/', noteLimiter, protect, paginateResults, this.noteController.getNotes);
+        this.router.get(
+            '/',
+            noteLimiter,
+            protect,
+            paginationQueryValidation,
+            paginateResults,
+            this.noteController.getNotes,
+        );
 
         this.router.get(
             '/search',
             noteLimiter,
             protect,
+            paginationQueryValidation,
             paginateResults,
             this.noteController.searchNotes,
         );
 
-        this.router.get('/:id', noteLimiter, protect, this.noteController.getNote);
+        this.router.get(
+            '/:id',
+            noteLimiter,
+            protect,
+            noteIdParamValidation,
+            this.noteController.getNote,
+        );
 
         this.router.put(
             '/:id',
             noteLimiter,
             protect,
+            noteIdParamValidation,
             updateNoteValidation,
             this.noteController.updateNote,
         );
 
-        this.router.delete('/:id', noteLimiter, protect, this.noteController.deleteNote);
+        this.router.delete(
+            '/:id',
+            noteLimiter,
+            protect,
+            noteIdParamValidation,
+            this.noteController.deleteNote,
+        );
     }
 }
 
