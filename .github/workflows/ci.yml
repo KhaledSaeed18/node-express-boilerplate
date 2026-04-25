@@ -62,7 +62,7 @@ jobs:
         run: pnpm lint:check
 
       - name: Type check
-        run: pnpm type:check
+        run: pnpm type-check
 
       - name: Build
         run: pnpm build

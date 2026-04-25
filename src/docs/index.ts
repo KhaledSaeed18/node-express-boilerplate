@@ -9,6 +9,7 @@ import { config } from '../config/env';
 import { schemas } from './schemas';
 import { authPaths } from './paths/auth.paths';
 import { notePaths } from './paths/note.paths';
+import { healthPaths } from './paths/health.paths';
 
 const baseUrl = `${config.BASE_URL}/${config.API_VERSION}`;
 
@@ -104,6 +105,11 @@ All errors follow a consistent envelope:
                 'Create, read, update, delete, and search notes. ' +
                 'All endpoints require a valid access token. ' +
                 'Rate-limited to **30 requests / 15 minutes** per IP address.',
+        },
+        {
+            name: 'Health',
+            description:
+                'Infrastructure-friendly liveness/readiness endpoint that reports service and database status.',
         },
     ],
 
@@ -203,5 +209,6 @@ All errors follow a consistent envelope:
     paths: {
         ...authPaths,
         ...notePaths,
+        ...healthPaths,
     },
 };
