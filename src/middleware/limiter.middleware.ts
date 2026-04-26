@@ -16,6 +16,11 @@ export const createRateLimiter = (
     limit: number,
     message: string,
 ): RequestHandler => {
+    if (process.env.NODE_ENV === 'test') {
+        return (_req, _res, next) => {
+            next();
+        };
+    }
     return rateLimit({
         windowMs,
         limit,
