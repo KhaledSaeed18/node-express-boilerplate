@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Agent | File |
 |-------|------|
 | Claude Code | `CLAUDE.md` (this file) + `.claude/skills/` |
+| Google Gemini CLI | `GEMINI.md` |
 | OpenAI Codex / ChatGPT | `AGENTS.md` |
 | Cursor | `.cursor/rules/architecture.mdc`, `.cursor/rules/conventions.mdc` |
 | GitHub Copilot | `.github/copilot-instructions.md` |
@@ -14,8 +15,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Available Skills
 
-- `/new-resource` — scaffold a complete new API resource (validation → repository → service → controller → route → container → app mount)
+- `/new-resource` — scaffold a complete new API resource (validation → repository → service → controller → route → container → app mount → OpenAPI → tests)
 - `/add-middleware` — add a new Express middleware and wire it up correctly
+- `/add-test` — scaffold unit tests (service layer) and integration tests (HTTP routes) for an existing resource
+- `/update-schema` — add a model or fields to `prisma/schema.prisma`, run migration, regenerate client, and update all affected layers
 
 ## Commands
 
@@ -39,7 +42,23 @@ pnpm prisma:studio          # Open Prisma Studio
 pnpm prisma:db:seed         # Seed the database
 ```
 
-**Package manager:** pnpm (v10.28.0+). **Node:** >= 22.0.0. No test suite is configured yet.
+**Package manager:** pnpm (v10.28.0+). **Node:** >= 22.0.0.
+
+# Testing
+
+```bash
+pnpm test                   # Run unit tests (Vitest)
+pnpm test:watch             # Run unit tests in watch mode
+pnpm test:coverage          # Unit tests with coverage report
+pnpm test:integration       # Run integration tests (requires test DB)
+pnpm test:all               # Run all test suites
+pnpm db:test:up             # Start ephemeral test database (Docker, port 5434)
+pnpm db:test:down           # Stop and remove test database
+pnpm db:test:migrate        # Apply migrations to the test database
+```
+
+Unit tests live in `tests/unit/` and target the service layer in isolation (mocked repositories).
+Integration tests live in `tests/integration/` and run full HTTP cycles via `supertest` against a real PostgreSQL instance.
 
 ## Architecture
 
