@@ -10,7 +10,7 @@ import { config } from '../config/env';
 
 const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
     getSecret: () => config.COOKIE_SECRET,
-    getSessionIdentifier: (req) => req.ip ?? '',
+    getSessionIdentifier: (req) => req.ip ?? req.socket.remoteAddress ?? 'unknown',
     cookieName: config.NODE_ENV === 'production' ? '__Host-x-csrf-token' : 'x-csrf-token',
     cookieOptions: {
         sameSite: 'strict',

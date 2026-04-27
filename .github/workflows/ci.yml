@@ -9,7 +9,7 @@ on:
     branches:
       - dev
 
-# Cancel any in-progress run for the same branch/PR so every new push to a PR doesn't queue behind the previous one.
+# Cancel any in-progress run for the same branch/PR so every new push doesn't queue behind the previous one.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -18,7 +18,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  ci:
+  quality:
     name: Format · Lint · Type-check · Build
     runs-on: ubuntu-latest
 
@@ -61,8 +61,73 @@ jobs:
       - name: Lint check
         run: pnpm lint:check
 
-      - name: Type check
-        run: pnpm type:check
+      - name: Type check (src)
+        run: pnpm type-check
+
+      - name: Type check (tests)
+        run: pnpm type-check:test
+
+      - name: Type check (prisma config)
+        run: pnpm type-check:node
 
       - name: Build
         run: pnpm build
+
+  test:
+    name: Unit · Integration tests
+    runs-on: ubuntu-latest
+    needs: quality
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: express_test
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        # Mirror the port from docker-compose.test.yml so .env.test works unchanged.
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://test_user:test_password@localhost:5434/express_test
+      JWT_SECRET: test_jwt_secret_at_least_32_characters_long
+      JWT_REFRESH_SECRET: test_refresh_secret_at_least_32_chars_long
+      JWT_EXPIRE_TIME: 15m
+      JWT_REFRESH_EXPIRE_TIME: 7d
+      CLIENT_URL: http://localhost:3001
+      BCRYPT_SALT_ROUNDS: "10"
+      COOKIE_SECRET: test_cookie_secret_at_least_32_chars_long
+      API_VERSION: v1
+      BASE_URL: /api
+      PORT: "0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm prisma:generate
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Integration tests
+        run: pnpm test:integration

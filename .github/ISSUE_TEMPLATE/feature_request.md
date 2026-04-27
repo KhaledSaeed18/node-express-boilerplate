@@ -1,20 +1,53 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
+about: Propose a new endpoint, behavior, or improvement
+title: '[Feature] '
+labels: enhancement
 assignees: ''
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## Problem Statement
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+<!-- What problem does this feature solve? Be specific. -->
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## Proposed Solution
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+<!-- Describe the desired behavior. If it involves a new or changed endpoint, include the proposed contract. -->
+
+**Endpoint (if applicable):**
+
+```
+METHOD /api/v1/...
+```
+
+**Request:**
+
+```json
+{
+
+}
+```
+
+**Response:**
+
+```json
+{
+
+}
+```
+
+## Alternatives Considered
+
+<!-- What other approaches did you evaluate and why did you rule them out? -->
+
+## Acceptance Criteria
+
+<!-- A checklist of conditions that must be true for this feature to be considered done. -->
+
+- [ ] 
+- [ ] 
+
+## Additional Context
+
+<!-- Any relevant constraints, dependencies, security considerations, or links to prior discussion. -->

@@ -1,36 +1,43 @@
-# 📋 Pull Request Description
+# Pull Request
 
 ## Type of Change
-<!-- Please check all that apply -->
-- [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
-- [ ] ✨ New feature (non-breaking change which adds functionality)
-- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] 📚 Documentation update
-- [ ] 🔧 Refactoring (no functional changes)
-- [ ] ⚡ Performance improvement
-- [ ] 🧪 Test addition or improvement
+
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to change)
+- [ ] Refactoring (no functional changes)
+- [ ] Performance improvement
+- [ ] Documentation update
+- [ ] Dependency update
 
 ## Summary
-<!-- Provide a brief description of what this PR does -->
+
+<!-- What does this PR do and why? Keep it concise. -->
 
 ## Related Issues
-<!-- Link any related issues using "Fixes #123" or "Related to #123" -->
+
+<!-- Link related issues. Use "Fixes #123" to auto-close on merge. -->
+
 - Fixes #
 - Related to #
 
-## 🔍 Code Quality
+## Implementation Notes
 
-### Self-Review Checklist
+<!-- Any non-obvious decisions, trade-offs, or context a reviewer needs to understand the changes. -->
 
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings or errors
+## Testing
 
-## 📚 Documentation
+<!-- Describe how these changes were tested. -->
 
-### Documentation Updates
+- [ ] Manually tested against a local PostgreSQL instance
+- [ ] Verified with Postman / curl — request/response examples attached if relevant
+- [ ] Database migrations run cleanly (`pnpm prisma:migrate`)
+- [ ] No regressions in existing endpoints
 
-- [ ] README.md updated (if applicable)
-- [ ] Code comments added/updated
-- [ ] No documentation changes needed
+## Pre-merge Checklist
+
+- [ ] `pnpm full-check` passes (format, lint, type-check)
+- [ ] Prisma client regenerated if schema changed (`pnpm prisma:generate`)
+- [ ] `.env.example` updated if new environment variables were added
+- [ ] No secrets, tokens, or credentials committed
+- [ ] Error paths throw the appropriate custom error class (not `res.status(...).json(...)`)

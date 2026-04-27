@@ -16,7 +16,8 @@ export class AuthRoute extends BaseRoute {
         // Initialize the controller here, after the container is available
         this.authController = this.container.getAuthController();
 
-        this.router.get('/csrf-token', (req: Request, res: Response) => {
+        // Rate-limited to prevent token-endpoint enumeration / DoS
+        this.router.get('/csrf-token', authLimiter, (req: Request, res: Response) => {
             const token = generateCsrfToken(req, res);
             res.json({ csrfToken: token });
         });

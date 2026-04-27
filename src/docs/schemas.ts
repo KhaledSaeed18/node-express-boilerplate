@@ -228,4 +228,61 @@ export const schemas = {
             },
         },
     },
+
+    HealthResponse: {
+        type: 'object',
+        required: ['status', 'db', 'checks', 'uptime', 'timestamp'],
+        properties: {
+            status: {
+                type: 'string',
+                enum: ['ok', 'error'],
+                description: 'Overall service health state',
+                example: 'ok',
+            },
+            db: {
+                type: 'string',
+                enum: ['connected', 'disconnected'],
+                description: 'Legacy top-level database connectivity flag',
+                example: 'connected',
+            },
+            checks: {
+                type: 'object',
+                required: ['database'],
+                properties: {
+                    database: {
+                        type: 'object',
+                        required: ['status', 'latencyMs', 'timeoutMs'],
+                        properties: {
+                            status: {
+                                type: 'string',
+                                enum: ['connected', 'disconnected'],
+                                example: 'connected',
+                            },
+                            latencyMs: {
+                                type: 'number',
+                                description: 'Elapsed DB probe time in milliseconds',
+                                example: 7,
+                            },
+                            timeoutMs: {
+                                type: 'number',
+                                description: 'Max wait time for the DB probe',
+                                example: 1500,
+                            },
+                        },
+                    },
+                },
+            },
+            uptime: {
+                type: 'number',
+                description: 'Process uptime in seconds',
+                example: 1234.56,
+            },
+            timestamp: {
+                type: 'string',
+                format: 'date-time',
+                description: 'Health response generation time (UTC)',
+                example: '2026-04-25T20:10:34.120Z',
+            },
+        },
+    },
 } as const;

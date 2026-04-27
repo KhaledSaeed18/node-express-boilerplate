@@ -7,16 +7,12 @@ export interface PaginationParams {
 export interface PaginatedResult<T> {
     data: T[];
     total: number;
-    page?: number;
-    limit?: number;
-    totalPages?: number;
+    totalPages: number;
 }
 
-export interface ServiceResponse<T> {
-    success: boolean;
-    data?: T;
-    error?: string;
-    message?: string;
+// JWT payload shape signed into every token
+export interface AuthPayload {
+    userId: string;
 }
 
 // User types
@@ -66,8 +62,14 @@ export interface SignInDTO {
     password: string;
 }
 
+// Returned by signUp — no tokens (user must sign in separately)
+export interface SignUpResponseDTO {
+    user: UserResponseDTO;
+}
+
+// Returned by signIn — always includes both tokens
 export interface AuthResponseDTO {
     user: UserResponseDTO;
-    accessToken?: string;
-    refreshToken?: string;
+    accessToken: string;
+    refreshToken: string;
 }

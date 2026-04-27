@@ -1,38 +1,64 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
+about: Report a reproducible issue with the API
+title: '[Bug] '
+labels: bug
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Description
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+<!-- A clear and concise description of the bug. -->
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## Endpoint
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+<!-- The HTTP method and path where the bug occurs. -->
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+`METHOD /api/v1/...`
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+## Steps to Reproduce
 
-**Additional context**
-Add any other context about the problem here.
+<!-- Provide a minimal reproduction. Include request headers, body, and any relevant setup. -->
+
+1. 
+2. 
+3. 
+
+**Request example:**
+
+```http
+POST /api/v1/...
+Content-Type: application/json
+
+{
+  
+}
+```
+
+## Expected Behavior
+
+<!-- What should happen. -->
+
+## Actual Behavior
+
+<!-- What actually happens. Include the full response body and status code. -->
+
+**Response (status `???`):**
+
+```json
+{
+
+}
+```
+
+## Environment
+
+- Node version:
+- pnpm version:
+- PostgreSQL version:
+- `NODE_ENV`:
+
+## Additional Context
+
+<!-- Stack traces, Pino log output, or anything else that helps narrow down the issue. -->

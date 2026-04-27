@@ -1,12 +1,12 @@
 /*
  * src/docs/setup.ts
  * Express router that serves the Swagger UI and the raw OpenAPI JSON spec.
- * Mounted at /api/docs in src/app.ts (before the CSRF middleware so that
+ * Mounted at /api-docs in src/app.ts (before the CSRF middleware so that
  * the UI's GET requests are not blocked by the CSRF protection).
  *
  * Routes:
- *   GET /api/docs       — interactive Swagger UI
- *   GET /api/docs.json  — raw OpenAPI 3.1.0 JSON spec
+ *   GET /api-docs       — interactive Swagger UI
+ *   GET /api-docs/spec  — raw OpenAPI 3.1.0 JSON spec
  */
 
 import { Router } from 'express';
@@ -16,7 +16,7 @@ import { openApiSpec } from './index';
 const docsRouter = Router();
 
 const swaggerUiOptions: swaggerUi.SwaggerUiOptions = {
-    customSiteTitle: 'Notes API — Docs',
+    customSiteTitle: 'Node Express Boilerplate — Notes API — Docs',
     customCss: `
         .swagger-ui .topbar { display: none; }
         .swagger-ui .info .title { font-size: 2rem; }
@@ -24,7 +24,7 @@ const swaggerUiOptions: swaggerUi.SwaggerUiOptions = {
     swaggerOptions: {
         persistAuthorization: true,
         displayRequestDuration: true,
-        tryItOutEnabled: false,
+        tryItOutEnabled: true,
         filter: true,
         deepLinking: true,
         docExpansion: 'list',

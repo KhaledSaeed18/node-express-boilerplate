@@ -71,3 +71,11 @@ export class InternalServerError extends AppError {
         super(message, 500);
     }
 }
+
+// TooManyRequestsError class for handling rate limit violations
+// This error is thrown when a client exceeds the allowed request rate
+export class TooManyRequestsError extends AppError {
+    constructor(message = 'Too many requests, please try again later') {
+        super(message, 429);
+    }
+}

@@ -49,7 +49,7 @@ export class NoteController extends BaseController implements INoteController {
 
     /**
      * Retrieves all notes for the authenticated user with pagination.
-     * Validates the request, retrieves the user ID, and calls the noteService to get notes.
+     * Pagination parameters (page, limit, skip) are provided by the paginateResults middleware.
      */
     public getNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -58,19 +58,17 @@ export class NoteController extends BaseController implements INoteController {
                 return;
             }
 
-            const page = parseInt(req.query.page as string) || 1;
-            const limit = parseInt(req.query.limit as string) || 10;
-            const skip = (page - 1) * limit;
-
+            const pagination = req.pagination ?? { page: 1, limit: 10, skip: 0 };
+            const { page, limit, skip } = pagination;
             const result = await this.noteService.getUserNotes(userId, { skip, take: limit });
 
             this.sendPaginatedResponse(res, 200, 'Notes retrieved successfully', result.data, {
-                currentPage: result.page,
+                currentPage: page,
                 totalPages: result.totalPages,
                 totalItems: result.total,
-                itemsPerPage: result.limit,
-                hasNext: result.page ? result.page < (result.totalPages ?? 0) : false,
-                hasPrev: result.page ? result.page > 1 : false,
+                itemsPerPage: limit,
+                hasNext: page < result.totalPages,
+                hasPrev: page > 1,
             });
         } catch (error) {
             this.handleError(error, next);
@@ -80,6 +78,7 @@ export class NoteController extends BaseController implements INoteController {
     /**
      * Searches for notes based on a query string.
      * Validates the request, retrieves the user ID, and calls the noteService to search notes.
+     * Pagination parameters are provided by the paginateResults middleware.
      */
     public searchNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -94,10 +93,8 @@ export class NoteController extends BaseController implements INoteController {
                 return;
             }
 
-            const page = parseInt(req.query.page as string) || 1;
-            const limit = parseInt(req.query.limit as string) || 10;
-            const skip = (page - 1) * limit;
-
+            const pagination = req.pagination ?? { page: 1, limit: 10, skip: 0 };
+            const { page, limit, skip } = pagination;
             const result = await this.noteService.searchUserNotes(userId, query, {
                 skip,
                 take: limit,
@@ -109,12 +106,12 @@ export class NoteController extends BaseController implements INoteController {
                 'Notes search completed successfully',
                 result.data,
                 {
-                    currentPage: result.page,
+                    currentPage: page,
                     totalPages: result.totalPages,
                     totalItems: result.total,
-                    itemsPerPage: result.limit,
-                    hasNext: result.page ? result.page < (result.totalPages ?? 0) : false,
-                    hasPrev: result.page ? result.page > 1 : false,
+                    itemsPerPage: limit,
+                    hasNext: page < result.totalPages,
+                    hasPrev: page > 1,
                 },
             );
         } catch (error) {
@@ -178,7 +175,7 @@ export class NoteController extends BaseController implements INoteController {
 
     /**
      * Deletes a specific note by its ID.
-     * Validates the request, retrieves the user ID, and calls the noteService to delete the note.
+     * Responds with 204 No Content on success.
      */
     public deleteNote = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -194,9 +191,9 @@ export class NoteController extends BaseController implements INoteController {
                 return;
             }
 
-            const note = await this.noteService.deleteNote(userId, noteId);
+            await this.noteService.deleteNote(userId, noteId);
 
-            this.sendResponse(res, 200, 'Note deleted successfully', note);
+            res.status(204).send();
         } catch (error) {
             this.handleError(error, next);
         }

@@ -2,6 +2,10 @@ export { signupValidation, signinValidation, signupSchema, signinSchema } from '
 export {
     createNoteValidation,
     updateNoteValidation,
+    paginationQueryValidation,
+    noteIdParamValidation,
     createNoteSchema,
     updateNoteSchema,
+    paginationQuerySchema,
+    noteIdParamSchema,
 } from './note.validation';

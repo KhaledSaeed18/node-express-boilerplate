@@ -6,6 +6,7 @@
 
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import type { Request, RequestHandler } from 'express';
+import { TooManyRequestsError } from '../errors';
 
 // Function to create a rate limiter
 // Accepts parameters for the time window, maximum requests, and error message
@@ -15,13 +16,18 @@ export const createRateLimiter = (
     limit: number,
     message: string,
 ): RequestHandler => {
+    if (process.env.NODE_ENV === 'test') {
+        return (_req, _res, next) => {
+            next();
+        };
+    }
     return rateLimit({
         windowMs,
         limit,
-        message: {
-            statusCode: 429,
-            error: 'Too Many Requests',
-            message,
+        // Use a custom handler so rate-limit errors share the same AppError response envelope
+        // as all other errors in the application, instead of express-rate-limit's default JSON shape.
+        handler: (_req, _res, next) => {
+            next(new TooManyRequestsError(message));
         },
         standardHeaders: true,
         legacyHeaders: false,
