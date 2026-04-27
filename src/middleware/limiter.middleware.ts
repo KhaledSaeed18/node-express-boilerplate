@@ -33,7 +33,7 @@ export const createRateLimiter = (
         legacyHeaders: false,
         keyGenerator: (req: Request) =>
             ipKeyGenerator(req.ip ?? req.socket.remoteAddress ?? 'unknown'),
-    }) as unknown as RequestHandler;
+    });
 };
 
 // Rate limiters for specific routes

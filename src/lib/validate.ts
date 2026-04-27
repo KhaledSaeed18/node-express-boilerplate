@@ -40,7 +40,7 @@ export const validateQuery = (schema: z.ZodType): RequestHandler => {
         }
         // req.query is a getter-only property in Express 5 / router@2 — must use defineProperty
         Object.defineProperty(req, 'query', {
-            value: result.data as Record<string, string>,
+            value: result.data,
             writable: true,
             configurable: true,
             enumerable: true,
