@@ -335,45 +335,37 @@ sequenceDiagram
     participant Svc as AuthService
     participant DB as Database
 
-    rect rgb(235, 245, 255)
-        Note over C,DB: Sign In
-        C->>Auth: POST /api/v1/auth/signin
-        Auth->>Svc: signIn(email, password)
-        Svc->>DB: findByEmail
-        DB-->>Svc: user record
-        Svc->>Svc: bcrypt.compare(password, hash)
-        Svc->>Svc: sign accessToken (JWT_SECRET, 15m)
-        Svc->>Svc: sign refreshToken (JWT_REFRESH_SECRET, 7d)
-        Auth-->>C: Set-Cookie: accessToken (HttpOnly, Signed)
-        Auth-->>C: Set-Cookie: refreshToken (HttpOnly, Signed)
-    end
+    Note over C,DB: Sign In
+    C->>Auth: POST /api/v1/auth/signin
+    Auth->>Svc: signIn(email, password)
+    Svc->>DB: findByEmail
+    DB-->>Svc: user record
+    Svc->>Svc: bcrypt.compare(password, hash)
+    Svc->>Svc: sign accessToken (JWT_SECRET, 15m)
+    Svc->>Svc: sign refreshToken (JWT_REFRESH_SECRET, 7d)
+    Auth-->>C: Set-Cookie: accessToken (HttpOnly, Signed)
+    Auth-->>C: Set-Cookie: refreshToken (HttpOnly, Signed)
 
-    rect rgb(235, 255, 245)
-        Note over C,DB: Authenticated Request
-        C->>MW: request + cookies
-        MW->>MW: protect — read signedCookies.accessToken
-        MW->>MW: jwt.verify(token, JWT_SECRET)
-        MW->>Auth: req.user = { id, email }
-    end
+    Note over C,DB: Authenticated Request
+    C->>MW: request + cookies
+    MW->>MW: protect — read signedCookies.accessToken
+    MW->>MW: jwt.verify(token, JWT_SECRET)
+    MW->>Auth: req.user = { id, email }
 
-    rect rgb(255, 245, 235)
-        Note over C,DB: Token Refresh
-        C->>Auth: POST /api/v1/auth/refresh-token
-        Auth->>Svc: refreshToken(signedCookie)
-        Svc->>Svc: jwt.verify(token, JWT_REFRESH_SECRET)
-        Svc->>DB: findById(userId)
-        Svc->>Svc: sign new accessToken
-        Auth-->>C: Set-Cookie: accessToken (new, HttpOnly)
-    end
+    Note over C,DB: Token Refresh
+    C->>Auth: POST /api/v1/auth/refresh-token
+    Auth->>Svc: refreshToken(signedCookie)
+    Svc->>Svc: jwt.verify(token, JWT_REFRESH_SECRET)
+    Svc->>DB: findById(userId)
+    Svc->>Svc: sign new accessToken
+    Auth-->>C: Set-Cookie: accessToken (new, HttpOnly)
 
-    rect rgb(255, 235, 245)
-        Note over C,DB: CSRF Protection
-        C->>Auth: GET /api/v1/auth/csrf-token
-        Auth-->>C: csrfToken + CSRF cookie (signed)
-        C->>MW: POST /api/v1/note + x-csrf-token header
-        MW->>MW: doubleCsrfProtection — compare header vs cookie signature
-        MW-->>C: 403 if mismatch, proceed if valid
-    end
+    Note over C,DB: CSRF Protection
+    C->>Auth: GET /api/v1/auth/csrf-token
+    Auth-->>C: csrfToken + CSRF cookie (signed)
+    C->>MW: POST /api/v1/note + x-csrf-token header
+    MW->>MW: doubleCsrfProtection — compare header vs cookie signature
+    MW-->>C: 403 if mismatch, proceed if valid
 ```
 
 ### CSRF Double-Submit Pattern
