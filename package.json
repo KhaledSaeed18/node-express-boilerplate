@@ -84,7 +84,7 @@
         "@types/express": "^5.0.6",
         "@types/http-errors": "^2.0.5",
         "@types/jsonwebtoken": "^9.0.10",
-        "@types/node": "^25.9.1",
+        "@types/node": "^25.9.2",
         "@types/supertest": "^7.2.0",
         "@types/swagger-ui-express": "^4.1.8",
         "@vitest/coverage-v8": "^4.1.8",
