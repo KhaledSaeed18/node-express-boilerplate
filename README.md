@@ -954,4 +954,12 @@ To report a bug or request a feature, use the issue templates in `.github/ISSUE_
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/chart?repos=KhaledSaeed18/node-express-boilerplate&type=date&legend=top-left)](https://www.star-history.com/?repos=KhaledSaeed18%2Fnode-express-boilerplate&type=date&legend=top-left)
+<div align="center">
+  <a href="https://github.com/KhaledSaeed18/node-express-boilerplate/stargazers">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/chart/github/stars/KhaledSaeed18/node-express-boilerplate.svg?mode=dark&theme=green" />
+      <source media="(prefers-color-scheme: light)" srcset="https://shieldcn.dev/chart/github/stars/KhaledSaeed18/node-express-boilerplate.svg?mode=light&theme=green" />
+      <img alt="Star History Chart" src="https://shieldcn.dev/chart/github/stars/KhaledSaeed18/node-express-boilerplate.svg?mode=dark&theme=green" width="100%" />
+    </picture>
+  </a>
+</div>
