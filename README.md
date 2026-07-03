@@ -8,8 +8,8 @@
 
 <!-- Build & project meta -->
 
-[![CI](https://shieldcn.dev/github/ci/KhaledSaeed18/node-express-boilerplate.svg?logo=githubactions&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/actions)
-[![License](https://shieldcn.dev/github/license/KhaledSaeed18/node-express-boilerplate.svg?logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![CI](https://shieldcn.dev/github/ci/KhaledSaeed18/node-express-boilerplate.svg?logo=githubactions&logoColor=18181b)](https://github.com/KhaledSaeed18/node-express-boilerplate/actions)
+[![License](https://shieldcn.dev/github/license/KhaledSaeed18/node-express-boilerplate.svg?logo=opensourceinitiative&logoColor=18181b)](LICENSE)
 [![PRs Welcome](https://shieldcn.dev/badge/PRs-welcome-16a34a.svg?logo=github&logoColor=white)](CONTRIBUTING.md)
 
 <!-- Tech stack -->
@@ -25,11 +25,11 @@
 
 <!-- Repository stats -->
 
-[![Stars](https://shieldcn.dev/github/stars/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/stargazers)
-[![Forks](https://shieldcn.dev/github/forks/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/forks)
-[![Issues](https://shieldcn.dev/github/issues/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/issues)
-[![Contributors](https://shieldcn.dev/github/contributors/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/graphs/contributors)
-[![Last Commit](https://shieldcn.dev/github/last-commit/KhaledSaeed18/node-express-boilerplate.svg?logo=git&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/commits/main)
+[![Stars](https://shieldcn.dev/github/stars/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=18181b)](https://github.com/KhaledSaeed18/node-express-boilerplate/stargazers)
+[![Forks](https://shieldcn.dev/github/forks/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=18181b)](https://github.com/KhaledSaeed18/node-express-boilerplate/forks)
+[![Issues](https://shieldcn.dev/github/issues/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=18181b)](https://github.com/KhaledSaeed18/node-express-boilerplate/issues)
+[![Contributors](https://shieldcn.dev/github/contributors/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=18181b)](https://github.com/KhaledSaeed18/node-express-boilerplate/graphs/contributors)
+[![Last Commit](https://shieldcn.dev/github/last-commit/KhaledSaeed18/node-express-boilerplate.svg?logo=git&logoColor=18181b)](https://github.com/KhaledSaeed18/node-express-boilerplate/commits/main)
 
 </div>
 
