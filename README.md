@@ -1,17 +1,37 @@
+<div align="center">
+
+<img src=".github/assets/node-express-boilerplate-banner.png" alt="node-express-boilerplate" width="100%" />
+
 # node-express-boilerplate
 
-[![CI](https://github.com/KhaledSaeed18/node-express-boilerplate/actions/workflows/ci.yml/badge.svg)](https://github.com/KhaledSaeed18/node-express-boilerplate/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/KhaledSaeed18/node-express-boilerplate/actions/workflows/codeql.yml/badge.svg)](https://github.com/KhaledSaeed18/node-express-boilerplate/actions/workflows/codeql.yml)
-[![Security](https://github.com/KhaledSaeed18/node-express-boilerplate/actions/workflows/security.yml/badge.svg)](https://github.com/KhaledSaeed18/node-express-boilerplate/actions/workflows/security.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
-[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
-[![pnpm](https://img.shields.io/badge/pnpm-10%2B-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
-[![GitHub Stars](https://img.shields.io/github/stars/KhaledSaeed18/node-express-boilerplate?style=flat&logo=github)](https://github.com/KhaledSaeed18/node-express-boilerplate/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/KhaledSaeed18/node-express-boilerplate?style=flat&logo=github)](https://github.com/KhaledSaeed18/node-express-boilerplate/forks)
-[![Last Commit](https://img.shields.io/github/last-commit/KhaledSaeed18/node-express-boilerplate?logo=git&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/commits/main)
+**A production-grade Express.js + TypeScript + Prisma boilerplate with clean architecture, security automation, and CI/CD baked in.**
+
+<!-- Build & project meta -->
+
+[![CI](https://shieldcn.dev/github/ci/KhaledSaeed18/node-express-boilerplate.svg?logo=githubactions&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/actions)
+[![License](https://shieldcn.dev/github/license/KhaledSaeed18/node-express-boilerplate.svg?logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![PRs Welcome](https://shieldcn.dev/badge/PRs-welcome-16a34a.svg?logo=github&logoColor=white)](CONTRIBUTING.md)
+
+<!-- Tech stack -->
+
+[![Node.js](https://shieldcn.dev/badge/Node.js-22%2B-339933.svg?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://shieldcn.dev/badge/TypeScript-6-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Express](https://shieldcn.dev/badge/Express-5-000000.svg?logo=express&logoColor=white)](https://expressjs.com/)
+[![Prisma](https://shieldcn.dev/badge/Prisma-7-2D3748.svg?logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![PostgreSQL](https://shieldcn.dev/badge/PostgreSQL-16-4169E1.svg?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Zod](https://shieldcn.dev/badge/Zod-4-3E67B1.svg?logo=zod&logoColor=white)](https://zod.dev/)
+[![pnpm](https://shieldcn.dev/badge/pnpm-10%2B-F69220.svg?logo=pnpm&logoColor=white)](https://pnpm.io/)
+[![Docker](https://shieldcn.dev/badge/Docker-ready-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com/)
+
+<!-- Repository stats -->
+
+[![Stars](https://shieldcn.dev/github/stars/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/stargazers)
+[![Forks](https://shieldcn.dev/github/forks/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/forks)
+[![Issues](https://shieldcn.dev/github/issues/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/issues)
+[![Contributors](https://shieldcn.dev/github/contributors/KhaledSaeed18/node-express-boilerplate.svg?logo=github&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/graphs/contributors)
+[![Last Commit](https://shieldcn.dev/github/last-commit/KhaledSaeed18/node-express-boilerplate.svg?logo=git&logoColor=white)](https://github.com/KhaledSaeed18/node-express-boilerplate/commits/main)
+
+</div>
 
 A production-grade Express.js boilerplate built for teams who want to start shipping without spending weeks on infrastructure. This is not a minimal hello-world starter — it is a fully wired system with layered clean architecture, strict TypeScript, automated security scanning, a complete CI/CD pipeline, Docker support, and structured AI agent instructions so every major coding tool understands the codebase from day one.
 
