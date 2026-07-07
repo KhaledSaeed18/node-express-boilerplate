@@ -943,23 +943,3 @@ For setup instructions, branch rules, commit format, testing setup, and the full
 For a detailed record of every change made during the 2026 revival including dependency upgrades, security additions, and architectural changes, see [CHANGELOG.md](CHANGELOG.md).
 
 To report a bug or request a feature, use the issue templates in `.github/ISSUE_TEMPLATE/`.
-
----
-
-## Contributors
-
-[![Contributors](https://contrib.rocks/image?repo=KhaledSaeed18/node-express-boilerplate)](https://github.com/KhaledSaeed18/node-express-boilerplate/graphs/contributors)
-
----
-
-## Star History
-
-<div align="center">
-  <a href="https://github.com/KhaledSaeed18/node-express-boilerplate/stargazers">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/chart/github/stars/KhaledSaeed18/node-express-boilerplate.svg?mode=dark&theme=green" />
-      <source media="(prefers-color-scheme: light)" srcset="https://shieldcn.dev/chart/github/stars/KhaledSaeed18/node-express-boilerplate.svg?mode=light&theme=green" />
-      <img alt="Star History Chart" src="https://shieldcn.dev/chart/github/stars/KhaledSaeed18/node-express-boilerplate.svg?mode=dark&theme=green" width="100%" />
-    </picture>
-  </a>
-</div>
