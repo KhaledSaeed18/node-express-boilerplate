@@ -227,19 +227,21 @@ graph TD
 │   ├── unit/                   # Service-layer tests with mocked repositories
 │   ├── integration/            # Full HTTP cycle tests via supertest
 │   └── helpers/                # globalSetup, setup, test utilities
+├── .agents/
+│   └── skills/                 # Agent skills (source of truth)
 ├── .claude/
-│   └── skills/                 # Claude Code slash-command workflows
+│   └── skills/                 # Symlinks into .agents/skills/
 ├── .cursor/rules/              # Cursor IDE rules
 ├── .github/
 │   ├── workflows/              # CI, CodeQL, Security pipelines
-│   ├── copilot-instructions.md
+│   ├── copilot-instructions.md # → symlink to AGENTS.md
 │   └── ISSUE_TEMPLATE/
 ├── docker-compose.yml          # Development database (port 5433)
 ├── docker-compose.test.yml     # Ephemeral test database (port 5434)
-├── CLAUDE.md                   # Claude Code instructions
-├── GEMINI.md                   # Gemini CLI instructions
-├── AGENTS.md                   # OpenAI Codex / ChatGPT instructions
-└── .windsurfrules             # Windsurf IDE instructions
+├── AGENTS.md                   # Canonical AI agent instructions
+├── CLAUDE.md                   # → symlink to AGENTS.md
+├── GEMINI.md                   # → symlink to AGENTS.md
+└── .windsurfrules              # → symlink to AGENTS.md
 ```
 
 ### The DI Container
@@ -843,16 +845,15 @@ The included `Dockerfile` is a multi-stage build. The application compiles TypeS
 
 ## AI Agent Compatibility
 
-This boilerplate is structured to be understood by AI coding tools out of the box. Rather than leaving agents to infer architecture from code exploration, every major tool has a dedicated instruction file that communicates the system design, hard rules, and code patterns it needs to generate correct contributions without review cycles.
+This boilerplate is structured to be understood by AI coding tools out of the box. [AGENTS.md](AGENTS.md) is the single canonical instruction file; every tool-specific file is a symlink to it, so instructions can never drift between tools.
 
 ```mermaid
 flowchart LR
-    Codebase["Codebase"] --> C["CLAUDE.md\n+ .claude/skills/"]
-    Codebase --> G["GEMINI.md"]
-    Codebase --> A["AGENTS.md"]
-    Codebase --> CU["cursor/rules/*.mdc"]
-    Codebase --> CO[".github/copilot-instructions.md"]
-    Codebase --> W["windsurfrules\n(Windsurf)"]
+    A["AGENTS.md\n(source of truth)"] --> C["CLAUDE.md (symlink)\n+ .claude/skills/"]
+    A --> G["GEMINI.md (symlink)"]
+    A --> CO[".github/copilot-instructions.md\n(symlink)"]
+    A --> W[".windsurfrules (symlink)"]
+    Codebase["Codebase"] --> CU["cursor/rules/*.mdc"]
 
     C --> ClaudeCode["Claude Code"]
     G --> Gemini["Google Gemini CLI"]
@@ -862,11 +863,11 @@ flowchart LR
     W --> Windsurf["Windsurf"]
 ```
 
-Each file teaches the agent the same core knowledge: the layered architecture, the DI container pattern, the hard rules (`no process.env`, `no console.*`, `no any`, `no direct res.json() on errors`), the Zod validation pattern, and the correct way to throw errors.
+The file teaches every agent the same core knowledge: the layered architecture, the DI container pattern, the hard rules (`no process.env`, `no console.*`, `no any`, `no direct res.json() on errors`), the Zod validation pattern, and the correct way to throw errors.
 
 ### Claude Code Skills
 
-Claude Code has four slash-command skills in `.claude/skills/` that automate the most common multi-step tasks:
+Skills live in `.agents/skills/` (source of truth) with symlinks in `.claude/skills/`. Six project-specific slash-command skills automate the most common multi-step tasks:
 
 | Skill | What it does |
 | ----- | ------------ |
@@ -874,6 +875,10 @@ Claude Code has four slash-command skills in `.claude/skills/` that automate the
 | `/add-middleware` | Creates a middleware file and wires it into the pipeline at the correct position |
 | `/add-test` | Scaffolds unit tests and integration tests for an existing resource |
 | `/update-schema` | Edits the Prisma schema, runs migration, regenerates the client, and updates all affected layers |
+| `/add-openapi-docs` | Documents endpoints in `src/docs/` — component schemas, path definitions, and spec registration |
+| `/security-audit` | Audits auth, CSRF, rate limiting, validation, secrets, and dependencies against the project's security architecture |
+
+Additional reference skills installed from the [skills ecosystem](https://skills.sh/) (tracked in `skills-lock.json`): `vitest`, `api-design-principles`, `nodejs-best-practices`, `multi-stage-dockerfile`, `prisma-client-api`, `prisma-database-setup`, `prisma-postgres`, `typescript-magician`, `find-skills`.
 
 This means an agent can add a fully wired, tested, documented resource to the API by running a single skill instead of constructing the sequence from first principles each time.
 

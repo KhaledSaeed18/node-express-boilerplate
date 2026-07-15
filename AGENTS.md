@@ -1,14 +1,42 @@
 # AGENTS.md
 
-Canonical instructions for AI coding agents working in this repository.
+Canonical instructions for AI coding agents working in this repository. `CLAUDE.md`, `GEMINI.md`, and `.github/copilot-instructions.md` are symlinks to this file — edit only this file.
 
 ## Read First
 
 - Project overview and architecture: [README.md](README.md)
 - Setup and contributor workflow: [CONTRIBUTING.md](CONTRIBUTING.md)
-- Copilot-specific wrapper: [.github/copilot-instructions.md](.github/copilot-instructions.md)
-- Claude-specific wrapper and skills: [CLAUDE.md](CLAUDE.md)
-- Gemini-specific wrapper: [GEMINI.md](GEMINI.md)
+
+## Skills
+
+Reusable workflows live in `.agents/skills/` (source of truth; `.claude/skills/` contains symlinks into it). Prefer a skill when the request matches one:
+
+Project workflows:
+
+- `new-resource` — scaffold a complete API resource end to end
+- `update-schema` — Prisma schema change + migration + client regen + downstream updates
+- `add-middleware` — create and wire Express middleware
+- `add-test` — scaffold unit and integration tests for a resource
+- `add-openapi-docs` — document endpoints in `src/docs/` (schemas, paths, registration)
+- `security-audit` — project-specific security review (auth, CSRF, limits, validation, secrets)
+
+Reference guidance:
+
+- `prisma-client-api`, `prisma-database-setup`, `prisma-postgres` — Prisma
+- `vitest` — Vitest testing patterns
+- `api-design-principles` — REST API design
+- `nodejs-best-practices` — Node.js patterns and decision-making
+- `multi-stage-dockerfile` — optimized Dockerfiles
+- `typescript-magician` — advanced TypeScript typing
+- `find-skills` — discover and install new skills
+
+When no skill matches, follow this file directly.
+
+## Working Style
+
+- Keep edits small and localized; avoid broad refactors unless explicitly requested.
+- Preserve current architecture and naming conventions.
+- After code changes, run `pnpm full-check` and the most relevant test suite before finishing.
 
 ## Stack
 
