@@ -529,6 +529,7 @@ pnpm lint                     # ESLint auto-fix
 pnpm type-check               # tsc --noEmit (src)
 pnpm type-check:test          # tsc --noEmit (tests)
 pnpm type-check:node          # tsc --noEmit (prisma config)
+pnpm knip                     # Detect unused files, exports, and dependencies
 
 pnpm prisma:migrate           # Create and apply migration (dev)
 pnpm prisma:migrate:deploy    # Apply pending migrations (production)
@@ -667,7 +668,8 @@ flowchart TD
         direction TB
         Q1["format:check"] --> Q2["lint:check"]
         Q2 --> Q3["type-check (src + tests + node)"]
-        Q3 --> Q4["pnpm audit (high+)"]
+        Q3 --> Q3b["knip (dead code + unused deps)"]
+        Q3b --> Q4["pnpm audit (high+)"]
         Q4 --> Q5["pnpm build"]
         Q5 --> Q6["Start PostgreSQL 16 service"]
         Q6 --> Q7["pnpm test (unit)"]
@@ -800,6 +802,7 @@ The following tools are configured and enforced:
 | ESLint | `eslint.config.mjs` | pre-commit (lint-staged), CI |
 | TypeScript | `tsconfig.json` (strict) | pre-commit (type-check), CI |
 | commitlint | `commitlint.config.cjs` | commit-msg hook |
+| Knip | `knip.json` | CI quality job (`pnpm knip`) — flags unused files, exports, and dependencies |
 | Vitest | `vitest.unit.config.ts` / `vitest.integration.config.ts` | CI test job |
 
 ESLint rules enforced beyond the standard recommended set:

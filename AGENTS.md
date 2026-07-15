@@ -57,6 +57,7 @@ pnpm full-check
 pnpm lint
 pnpm format
 pnpm type-check
+pnpm knip          # dead code / unused deps (enforced in CI)
 
 # Prisma
 pnpm prisma:migrate

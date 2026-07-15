@@ -39,11 +39,6 @@ export const noteIdParamSchema = z.object({
         .regex(/^c[a-z0-9]{24}$/, 'Invalid note ID format'),
 });
 
-export type CreateNoteInput = z.infer<typeof createNoteSchema>;
-export type UpdateNoteInput = z.infer<typeof updateNoteSchema>;
-export type PaginationQueryInput = z.infer<typeof paginationQuerySchema>;
-export type NoteIdParamInput = z.infer<typeof noteIdParamSchema>;
-
 export const createNoteValidation: RequestHandler = validateBody(createNoteSchema);
 export const updateNoteValidation: RequestHandler = validateBody(updateNoteSchema);
 export const paginationQueryValidation: RequestHandler = validateQuery(paginationQuerySchema);

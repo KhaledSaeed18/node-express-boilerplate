@@ -82,6 +82,10 @@ jobs:
       - name: Type check (prisma config)
         run: pnpm type-check:node
 
+      # Fails on unused files, exports, and dependencies (config in knip.json).
+      - name: Dead code check (knip)
+        run: pnpm knip
+
       - name: Build
         run: pnpm build
 

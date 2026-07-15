@@ -66,6 +66,7 @@ export class ConflictError extends AppError {
 
 // InternalServerError class for handling unexpected server errors
 // This error is thrown when an unexpected error occurs on the server, such as a database connection failure
+/** @public Part of the documented AppError hierarchy — kept for boilerplate consumers. */
 export class InternalServerError extends AppError {
     constructor(message = 'Internal server error') {
         super(message, 500);

@@ -32,8 +32,6 @@ const envSchema = z.object({
     COOKIE_SECRET: z.string().min(32, 'COOKIE_SECRET must be at least 32 characters'),
 });
 
-export type Config = z.infer<typeof envSchema>;
-
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
