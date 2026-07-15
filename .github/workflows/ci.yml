@@ -47,8 +47,20 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       # Fail CI on high or critical severity vulnerabilities in any dependency.
+      # npm retired the classic audit endpoint (410) and pnpm has not yet
+      # migrated to the bulk advisory endpoint, so `pnpm audit` currently fails.
+      # npm audit already uses the bulk endpoint; generate a lockfile-only
+      # manifest (nothing is installed) and audit that instead. Switch back to
+      # `pnpm audit --audit-level=high` once pnpm supports the new endpoint.
+      # Run from a clean temp dir with only package.json — npm's resolver
+      # errors on pnpm's symlinked node_modules layout.
       - name: Audit dependencies
-        run: pnpm audit --audit-level=high
+        run: |
+          audit_dir=$(mktemp -d)
+          cp package.json "$audit_dir/"
+          cd "$audit_dir"
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund --legacy-peer-deps
+          npm audit --audit-level=high
 
       # Generates src/generated/prisma from prisma/schema.prisma.
       # Must run before type-check so @prisma/client types are available.
