@@ -100,5 +100,3 @@ export class Container implements IContainer {
         return this.noteController;
     }
 }
-
-export default Container;

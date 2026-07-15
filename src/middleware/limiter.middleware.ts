@@ -7,6 +7,7 @@
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import type { Request, RequestHandler } from 'express';
 import { TooManyRequestsError } from '../errors';
+import { config } from '../config/env';
 
 // Function to create a rate limiter
 // Accepts parameters for the time window, maximum requests, and error message
@@ -16,7 +17,7 @@ export const createRateLimiter = (
     limit: number,
     message: string,
 ): RequestHandler => {
-    if (process.env.NODE_ENV === 'test') {
+    if (config.NODE_ENV === 'test') {
         return (_req, _res, next) => {
             next();
         };

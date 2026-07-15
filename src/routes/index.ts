@@ -1,4 +1,3 @@
-export { BaseRoute } from './base.route';
-export { default as authRoutes, AuthRoute } from './auth.routes';
-export { default as noteRoutes, NoteRoute } from './note.routes';
+export { default as authRoutes } from './auth.routes';
+export { default as noteRoutes } from './note.routes';
 export { healthRouter } from './health.routes';

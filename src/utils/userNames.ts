@@ -7,7 +7,7 @@
 import crypto from 'crypto';
 import type { IUserRepository } from '../repository';
 
-export function generateUsername(base?: string): string {
+function generateUsername(base?: string): string {
     if (base) {
         const sanitized = base.toLowerCase().replace(/[^a-z0-9]/g, '');
         const suffix = crypto.randomInt(1000, 9999).toString();

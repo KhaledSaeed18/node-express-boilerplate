@@ -38,8 +38,5 @@ export const signinSchema = z.object({
     password: z.string({ error: 'Password is required' }).min(1, 'Password is required'),
 });
 
-export type SignupInput = z.infer<typeof signupSchema>;
-export type SigninInput = z.infer<typeof signinSchema>;
-
 export const signupValidation: RequestHandler = validateBody(signupSchema);
 export const signinValidation: RequestHandler = validateBody(signinSchema);
